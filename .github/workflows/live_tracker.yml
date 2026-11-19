@@ -1,0 +1,26 @@
+name: Live Student Progress Tracker
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'students/**'
+
+permissions:
+  contents: write
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python scripts/update_board.py
+      - run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "Live Lab Monitor"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update live class status"
+          git push
