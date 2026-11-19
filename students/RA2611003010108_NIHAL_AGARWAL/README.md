@@ -1,18 +1,18 @@
-# Differential Calculus Lab Worksheet
+# Differential Calculus Lab & Live Discovery Worksheet
 * **Student Name:** NIHAL AGARWAL
 * **Register Number:** `RA2611003010108`
 * **Assigned Unique Constants:** $a = 10$, $b = 12$
 
-> **Submission Instructions:** Upload your hand-worked step-by-step derivations inside this folder (`students/RA2611003010108_NIHAL_AGARWAL/`) using the exact filenames below so the live class dashboard tracks your progress automatically:
-> * **Period 1:** `P1_Worked.pdf` and `P1_Visual.png`
-> * **Period 2:** `P2_Worked.pdf`
-> * **Period 3:** `P3_Worked.pdf` and `P3_Surface.png`
+> **Deliverables to Upload Inside This Folder (`students/RA2611003010108_NIHAL_AGARWAL/`):**
+> 1. **Hand-Worked Derivations:** `P1_Worked.pdf`, `P2_Worked.pdf`, `P3_Worked.pdf`
+> 2. **Live Demonstration Visuals:** `P1_Visual.png`, `P2_Visual.png`, `P3_Visual.png` (generated via `live_visualizer.py` or GeoGebra/Desmos using $a=10, b=12$)
+> 3. **Individual Learning Log:** Edit `OBSERVATIONS.md` in this folder to record your visual observations and mathematical takeaways.
 
 ---
 
 ## Period 1 (50 Mins): Curvature, Evolutes, Envelopes & Pedal Equations
 1. **Curve Tracing & Curvature:** Trace the ellipse $\frac{x^2}{100} + \frac{y^2}{144} = 1$ ($x = 10\cos t, \; y = 12\sin t$). Derive $\rho$ in Cartesian and Parametric forms, and evaluate $\rho$ at $t = \frac{\pi}{4}$.
-2. **Polar Curvature & Pedal Equation:** For the cardioid $r = 10(1 + \cos\theta)$, derive its pedal equation ($p$-$r$ relation) and compute $\rho$ at $\theta = \frac{\pi}{3}$ using both polar and pedal formulas.
+2. **Polar Curvature & Pedal Equation:** For the cardioid $r = 10(1 + \cos\theta)$, derive its pedal equation ($p$-$r$) and compute $\rho$ at $\theta = \frac{\pi}{3}$ using both polar and pedal formulas.
 3. **Circle of Curvature, Evolute & Envelope:** For the parabola $y^2 = 40x$, find the equation of the Circle of Curvature at $(10, 20)$, derive its Evolute $27(10)y^2 = 4(x - 20)^3$, and prove that the **Envelope of Normals** $y + tx = 20t + 10t^3$ yields the exact same evolute.
 4. **Involute:** Derive the parametric equations of the involute of the circle $x = 12\cos\theta, \; y = 12\sin\theta$ starting from $\theta = 0$.
 
