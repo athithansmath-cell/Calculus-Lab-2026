@@ -72,7 +72,14 @@
     <!-- ==================== PERIOD 1 ==================== -->
     <div id="period1" class="card">
       <h2>Period 1: Reverse-Engineer Your Mystery Curves</h2>
-
+<div class="subcard" style="background:#eff6ff; border-left-color:#1e3a8a;">
+  <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
+  <ul>
+    <li><strong>See Before You Differentiate:</strong> Instead of plugging numbers into a formula blindly, read your unique semi-axes <strong>$a$</strong> (right $x$-intercept) and <strong>$b$</strong> (top $y$-intercept) directly from the blue ellipse.</li>
+    <li><strong>Geometric Meaning of Curvature ($\rho$):</strong> As you drag slider $t$, watch the green <em>Osculating Circle</em> shrink at sharp bends and expand along flatter sections—your derivatives $x'(t), y'(t), x''(t), y''(t)$ prove mathematically why that circle has that exact radius and center $(\bar{x}, \bar{y})$.</li>
+    <li><strong>Envelopes & Evolutes in Action:</strong> Notice how the moving center of curvature traces the red <em>Evolute</em> curve, and how normal lines bundle up to form the sharp cusp $(2a, 0)$—turning four separate formulas into one connected geometric mechanism.</li>
+  </ul>
+</div>
       <div class="subcard">
         <h3>1A. Mystery Ellipse & Evolute Discovery</h3>
         <p>Inspect the blue ellipse below to read its semi-axes <strong>$a$</strong> (x-intercept) and <strong>$b$</strong> (y-intercept). Then slide <strong>$t$</strong> to your live target angle <strong>$t_0 = <span id="targetT1"></span>$ rad</strong>.</p>
@@ -113,7 +120,13 @@
     <!-- ==================== PERIOD 2 ==================== -->
     <div id="period2" class="card hidden">
       <h2>Period 2: Hidden Ridge, Euler Scaling & Jacobian Matrix</h2>
-
+<div class="subcard" style="background:#eff6ff; border-left-color:#1e3a8a;">
+  <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
+  <ul>
+    <li><strong>Why Directional Limits Fail at $(0,0)$:</strong> Along the coordinate axes ($y=0$ or $x=0$), the blue slice stays flat at height $0$, so $f_x(0,0)=0$ and $f_y(0,0)=0$. Yet dragging slope $m$ lifts the red slice to a peak ridge $H_{\max} = \frac{ab}{2}$ along $y=x$—proving visually why partial derivatives can exist even when a 2D limit does not.</li>
+    <li><strong>Coordinate Stretching via the Jacobian:</strong> In Plot 2B, observe how straight grid lines in $(u,v)$ bend into parabolic curves in $(x,y)$. Evaluating the $2 \times 2$ Jacobian determinant $\frac{\partial(x,y)}{\partial(u,v)}$ measures the exact local area-stretching factor of that warp.</li>
+  </ul>
+</div>
       <div class="subcard">
         <h3>2A. Directional Limit Ridge Hunt</h3>
         <p>Drag approach slope <strong>$m$</strong> along $y = mx$ to find the <strong>maximum height $H_{\max}$</strong> of the red slice line, and deduce the hidden product $ab = 2 H_{\max}$.</p>
@@ -152,7 +165,13 @@
     <!-- ==================== PERIOD 3 ==================== -->
     <div id="period3" class="card hidden">
       <h2>Period 3: Taylor Divergence, Saddle Valley & Lagrange Kiss</h2>
-
+<div class="subcard" style="background:#eff6ff; border-left-color:#1e3a8a;">
+  <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
+  <ul>
+    <li><strong>Where Polynomial Approximations Break Down:</strong> In Plot 3A, compare how closely the dashed 3rd-order Taylor polynomial hugs the solid exact curve $e^{ax}\cos(by)$ near $x=0$, and pinpoint the exact threshold where higher-order terms can no longer be ignored.</li>
+    <li><strong>Saddle Points vs. Lagrange Tangency:</strong> In Plot 3B, dragging energy level $k$ until the blue ellipse <em>just kisses</em> the red constraint line $x+y=a+b$ shows geometrically why optimal constrained extrema occur where gradient vectors align ($\nabla T = \lambda \nabla \phi$) at $(x^*, y^*) = (b, a)$.</li>
+  </ul>
+</div>
       <div class="subcard">
         <h3>3A. Taylor Series Breakdown Hunt</h3>
         <p>Hover where the dashed 3rd-order Taylor curve separates from the solid exact curve $e^{ax}\cos(by)$ along $y=x$.</p>
