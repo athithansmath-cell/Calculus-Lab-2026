@@ -27,21 +27,24 @@
     .plot-box { width: 100%; height: 340px; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px; }
     .status-msg { margin-top: 10px; font-weight: 600; }
     .hidden { display: none; }
+    .hint { font-size: 13px; color: #475569; margin-top: 4px; }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="card">
     <h1>Differential Calculus Live Discovery Lab</h1>
-    <p>Log in with your Register Number and Name to access your personalized equations, live interactive visualizers, and submission workspace.</p>
+    <p>Enter your Register Number and Full Name below to load your personalized equations, interactive visualizers, and submission workspace.</p>
 
     <div id="loginBox">
-      <label for="regSelect">Select Your Register Number & Name</label>
-      <select id="regSelect">
-        <option value="">-- Choose Your Register Number --</option>
-      </select>
-      <label for="nameConfirm">Verify Your First Name (as in roster)</label>
-      <input type="text" id="nameConfirm" placeholder="e.g., PARAMITA" />
+      <label for="regInput">Register Number</label>
+      <input type="text" id="regInput" list="rosterList" placeholder="Enter Register Number (e.g., RA2611003010078)" oninput="autoFillName()" />
+      <datalist id="rosterList"></datalist>
+      <div class="hint">Students from any section can type their Register Number directly.</div>
+
+      <label for="nameInput">Full Name</label>
+      <input type="text" id="nameInput" placeholder="Enter Your Full Name (e.g., PARAMITA RAKSHIT)" />
+
       <button onclick="loginStudent()">Start Lab Activity</button>
       <p id="loginError" class="status-msg" style="color:#dc2626;"></p>
     </div>
@@ -154,16 +157,25 @@ const ROSTER = [
 
 let currentUser = null;
 
-const sel = document.getElementById("regSelect");
+const dataList = document.getElementById("rosterList");
 ROSTER.forEach(([reg, name]) => {
   const opt = document.createElement("option");
   opt.value = reg;
-  opt.textContent = `${reg} — ${name}`;
-  sel.appendChild(opt);
+  opt.label = name;
+  dataList.appendChild(opt);
 });
 
+function autoFillName() {
+  const reg = document.getElementById("regInput").value.trim().toUpperCase();
+  const found = ROSTER.find(r => r[0] === reg);
+  if (found) {
+    document.getElementById("nameInput").value = found[1];
+  }
+}
+
 function getParams(reg) {
-  const n = parseInt(reg.slice(-3), 10);
+  const digits = reg.replace(/\D/g, "");
+  const n = digits.length >= 3 ? parseInt(digits.slice(-3), 10) : Array.from(reg).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
   const a = ((n * 7) % 11) + 2;
   let b = ((n * 5 + 3) % 13) + 2;
   if (a === b) b += 1;
@@ -171,21 +183,32 @@ function getParams(reg) {
 }
 
 function loginStudent() {
-  const reg = sel.value;
-  const typed = document.getElementById("nameConfirm").value.trim().toUpperCase();
+  const reg = document.getElementById("regInput").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const rawName = document.getElementById("nameInput").value.trim().toUpperCase().replace(/[^A-Z ]/g, "").replace(/\s+/g, " ");
   const err = document.getElementById("loginError");
-  if (!reg) { err.textContent = "Please select your Register Number."; return; }
-  const found = ROSTER.find(r => r[0] === reg);
-  if (!typed || !found[1].includes(typed) || typed.length < 3) {
-    err.textContent = "Name does not match the selected Register Number.";
+
+  if (reg.length < 6) {
+    err.textContent = "Please enter a valid Register Number (at least 6 characters).";
     return;
   }
+  if (rawName.length < 2) {
+    err.textContent = "Please enter your Full Name.";
+    return;
+  }
+
+  const existing = ROSTER.find(r => r[0] === reg);
+  const finalName = existing ? existing[1] : rawName;
+  if (existing && !existing[1].includes(rawName.split(" ")[0])) {
+    err.textContent = "Name does not match the registered name for this Register Number.";
+    return;
+  }
+
   err.textContent = "";
   const { a, b } = getParams(reg);
-  const folder = `${reg}_${found[1].replace(/ /g, "_")}`;
-  currentUser = { reg, name: found[1], a, b, folder };
+  const folder = `${reg}_${finalName.replace(/ /g, "_")}`;
+  currentUser = { reg, name: finalName, a, b, folder, isNewStudent: !existing };
 
-  document.getElementById("dispName").textContent = found[1];
+  document.getElementById("dispName").textContent = finalName;
   document.getElementById("dispReg").textContent = reg;
   document.getElementById("dispA").textContent = a;
   document.getElementById("dispB").textContent = b;
@@ -302,11 +325,15 @@ function drawP3Plot() {
   ], { margin: { t: 20, b: 35, l: 40, r: 15 } });
 }
 
-async function uploadToGitHub(path, contentBase64, message) {
+async function uploadToGitHub(path, contentBase64, message, skipIfExists = false) {
   const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
   let sha = null;
   const check = await fetch(apiUrl, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
-  if (check.ok) { const existing = await check.json(); sha = existing.sha; }
+  if (check.ok) {
+    if (skipIfExists) return;
+    const existing = await check.json();
+    sha = existing.sha;
+  }
   const res = await fetch(apiUrl, {
     method: "PUT",
     headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
@@ -326,9 +353,13 @@ async function submitPeriod(pNum) {
   if (!work || !obs) { statusEl.style.color = "#dc2626"; statusEl.textContent = "Please fill in both your derivations and observations before submitting."; return; }
 
   statusEl.style.color = "#1e3a8a";
-  statusEl.textContent = `Saving Period ${pNum} derivations, graph, and learning log...`;
+  statusEl.textContent = `Creating your folder and saving Period ${pNum} work...`;
 
   try {
+    // Auto-create student profile README.md if this is a new student from another class
+    const profileReadme = `# Differential Calculus Lab Worksheet\n* **Student Name:** ${currentUser.name}\n* **Register Number:** \`${currentUser.reg}\`\n* **Assigned Unique Constants:** $a = ${currentUser.a}$, $b = ${currentUser.b}$\n`;
+    await uploadToGitHub(`students/${currentUser.folder}/README.md`, toBase64Unicode(profileReadme), `${currentUser.reg}: Initialize student folder`, true);
+
     const mdContent = `# Period ${pNum} Worked Derivations — ${currentUser.name} (${currentUser.reg})\n**Parameters:** $a = ${currentUser.a}$, $b = ${currentUser.b}$\n\n## Step-by-Step Mathematical Derivations\n${work}\n\n## Visual Observation & Learning\n${obs}\n`;
     await uploadToGitHub(`students/${currentUser.folder}/P${pNum}_Worked.md`, toBase64Unicode(mdContent), `${currentUser.reg}: Submit Period ${pNum} derivations`);
 
@@ -340,7 +371,7 @@ async function submitPeriod(pNum) {
     await uploadToGitHub(`students/${currentUser.folder}/OBSERVATIONS.md`, toBase64Unicode(allObs), `${currentUser.reg}: Update observations log`);
 
     statusEl.style.color = "#16a34a";
-    statusEl.textContent = `✅ Period ${pNum} submitted successfully! Your instructor's live dashboard is updated.`;
+    statusEl.textContent = `✅ Period ${pNum} submitted successfully! Your folder and live dashboard have been updated.`;
   } catch (err) {
     statusEl.style.color = "#dc2626";
     statusEl.textContent = "Submission error: " + err.message;
