@@ -37,13 +37,12 @@
     <p>Enter your Register Number and Full Name below to load your personalized equations, interactive visualizers, and submission workspace.</p>
 
     <div id="loginBox">
-      <label for="regInput">Register Number</label>
-      <input type="text" id="regInput" list="rosterList" placeholder="Enter Register Number (e.g., RA2611003010078)" oninput="autoFillName()" />
-      <datalist id="rosterList"></datalist>
-      <div class="hint">Students from any section can type their Register Number directly.</div>
+      <label for="regInput">Register Number (Type Yours Directly)</label>
+      <input type="text" id="regInput" placeholder="Type Register No. e.g., RA2611003010078" oninput="autoFillName()" autocomplete="off" />
+      <div class="hint">Students from any class or section can type their Register Number here.</div>
 
       <label for="nameInput">Full Name</label>
-      <input type="text" id="nameInput" placeholder="Enter Your Full Name (e.g., PARAMITA RAKSHIT)" />
+      <input type="text" id="nameInput" placeholder="Type Your Full Name e.g., PARAMITA RAKSHIT" autocomplete="off" />
 
       <button onclick="loginStudent()">Start Lab Activity</button>
       <p id="loginError" class="status-msg" style="color:#dc2626;"></p>
