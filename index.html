@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Differential Calculus Live Lab Portal</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <style>
+    :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    h1, h2, h3 { color: var(--primary); margin-top: 0; }
+    label { font-weight: 600; display: block; margin: 12px 0 6px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+    textarea { min-height: 120px; font-family: monospace; }
+    button { background: var(--accent); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #1d4ed8; }
+    .badge { display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tab-btn { background: #e2e8f0; color: #1e293b; margin-top: 0; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .plot-box { width: 100%; height: 340px; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px; }
+    .status-msg { margin-top: 10px; font-weight: 600; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>Differential Calculus Live Discovery Lab</h1>
+    <p>Log in with your Register Number and Name to access your personalized equations, live interactive visualizers, and submission workspace.</p>
+
+    <div id="loginBox">
+      <label for="regSelect">Select Your Register Number & Name</label>
+      <select id="regSelect">
+        <option value="">-- Choose Your Register Number --</option>
+      </select>
+      <label for="nameConfirm">Verify Your First Name (as in roster)</label>
+      <input type="text" id="nameConfirm" placeholder="e.g., PARAMITA" />
+      <button onclick="loginStudent()">Start Lab Activity</button>
+      <p id="loginError" class="status-msg" style="color:#dc2626;"></p>
+    </div>
+
+    <div id="studentHeader" class="hidden">
+      <p><strong>Student:</strong> <span id="dispName"></span> (<span id="dispReg"></span>)</p>
+      <p><strong>Your Assigned Unique Parameters:</strong> <span class="badge">a = <span id="dispA"></span></span> &nbsp; <span class="badge">b = <span id="dispB"></span></span></p>
+      <button onclick="logoutStudent()" style="background:#64748b; padding:6px 12px; font-size:13px;">Switch Student</button>
+    </div>
+  </div>
+
+  <div id="workspace" class="hidden">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showPeriod(1)">Period 1: Curvature & Evolutes</button>
+      <button class="tab-btn" onclick="showPeriod(2)">Period 2: Partials & Jacobians</button>
+      <button class="tab-btn" onclick="showPeriod(3)">Period 3: Taylor & Extrema</button>
+    </div>
+
+    <!-- PERIOD 1 -->
+    <div id="period1" class="card">
+      <h2>Period 1 (50 Mins): Curvature, Evolutes, Envelopes & Pedal Equations</h2>
+      <div id="p1Questions"></div>
+      <h3>Live Interactive Curve & Evolute Visualizer</h3>
+      <p>Adjust parameter <strong>t</strong> to watch the Osculating Circle roll along your ellipse and trace its Evolute (Envelope of Normals):</p>
+      <label>Parameter t (radians): <span id="tValLabel">0.79</span></label>
+      <input type="range" id="tSlider" min="0" max="6.28" step="0.05" value="0.79" oninput="drawP1Plot()" />
+      <div id="plotP1" class="plot-box"></div>
+
+      <label>Step-by-Step Worked Derivations (Period 1)</label>
+      <textarea id="p1Work" placeholder="Write your step-by-step derivations for Radius of Curvature, Pedal Equation, Evolute, Envelope, and Involute..."></textarea>
+
+      <label>Visual Observation & Key Learning (Period 1)</label>
+      <textarea id="p1Obs" style="min-height:80px;" placeholder="What did you observe as t moved along your ellipse? How did the osculating circle radius change?"></textarea>
+
+      <button onclick="submitPeriod(1)">Submit Period 1 Work & Graph</button>
+      <div id="statusP1" class="status-msg"></div>
+    </div>
+
+    <!-- PERIOD 2 -->
+    <div id="period2" class="card hidden">
+      <h2>Period 2 (50 Mins): Limits, Partial Derivatives, Euler’s Theorem & Jacobians</h2>
+      <div id="p2Questions"></div>
+      <h3>Live Jacobian Coordinate Warping Visualizer</h3>
+      <p>Observe how your transformation maps a uniform $(u,v)$ grid into parabolic curves in $(x,y)$:</p>
+      <div id="plotP2" class="plot-box"></div>
+
+      <label>Step-by-Step Worked Derivations (Period 2)</label>
+      <textarea id="p2Work" placeholder="Write your step-by-step work for Limit/Continuity at (0,0), Total Derivative, Euler's Theorem (degree 2), and 3D Jacobian..."></textarea>
+
+      <label>Visual Observation & Key Learning (Period 2)</label>
+      <textarea id="p2Obs" style="min-height:80px;" placeholder="Explain why partial derivatives exist at (0,0) despite discontinuity, and what your Jacobian grid plot reveals..."></textarea>
+
+      <button onclick="submitPeriod(2)">Submit Period 2 Work & Graph</button>
+      <div id="statusP2" class="status-msg"></div>
+    </div>
+
+    <!-- PERIOD 3 -->
+    <div id="period3" class="card hidden">
+      <h2>Period 3 (50 Mins): Taylor Series, Extrema & Lagrange Multipliers</h2>
+      <div id="p3Questions"></div>
+      <h3>Live Extrema Contour & Saddle Visualizer</h3>
+      <p>Inspect your surface $g(x,y) = ax^3 + by^3 - 3abxy$ around the Saddle Point $(0,0)$ and Local Extremum:</p>
+      <div id="plotP3" class="plot-box"></div>
+
+      <label>Step-by-Step Worked Derivations (Period 3)</label>
+      <textarea id="p3Work" placeholder="Write your step-by-step work for 3rd-Order Taylor Expansion, Stationary Points & Hessian Classification, and Lagrange Multipliers..."></textarea>
+
+      <label>Visual Observation & Key Learning (Period 3)</label>
+      <textarea id="p3Obs" style="min-height:80px;" placeholder="Describe the contour pattern around the saddle point vs. local extremum and how Lagrange tangency works..."></textarea>
+
+      <button onclick="submitPeriod(3)">Submit Period 3 Work & Graph</button>
+      <div id="statusP3" class="status-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// === INSTRUCTOR CONFIGURATION ===
+const GITHUB_OWNER = "athithansmath-cell";
+const GITHUB_REPO  = "Calculus-Lab-2026";
+const GITHUB_TOKEN = "PASTE_YOUR_TOKEN_HERE"; // Fine-grained token with Contents: Read & Write on Calculus-Lab-2026
+// ================================
+
+const ROSTER = [
+  ["RA2611003010078","PARAMITA RAKSHIT"],["RA2611003010079","SATTWIK DAS"],["RA2611003010080","SAMEEKSHA"],
+  ["RA2611003010081","KONATHAM JAGATH ANIRUDH"],["RA2611003010082","BANDI AISHWARYA"],["RA2611003010083","BORAPAREDDY KRISHNA SANDEEP"],
+  ["RA2611003010084","ABHIGYAN HAZRA"],["RA2611003010085","UPADHYE SAKSHAM KISHOR"],["RA2611003010087","SYED ARHAM HAMEED"],
+  ["RA2611003010088","GOPAVARAM KOUSHIK PREETHAM REDDY"],["RA2611003010089","BHASITH VENKATA MANI SAI PARDHU CHAKKA"],["RA2611003010090","AASIM M A"],
+  ["RA2611003010091","RAJA VIKRAM M P"],["RA2611003010092","PRATHISHNA K"],["RA2611003010093","HARISH R"],
+  ["RA2611003010094","ANANT SINGH"],["RA2611003010095","MADDELA AKHIL"],["RA2611003010096","MUKTESH REDDY PALLE"],
+  ["RA2611003010097","PRIYANSH MAURYA"],["RA2611003010098","PRANIT AMARTYA BANERJEE"],["RA2611003010099","PUGHAZ RAAGHAVAN S Y"],
+  ["RA2611003010100","NAMBI RAM V"],["RA2611003010101","VISHWAS GARG"],["RA2611003010102","SAMBHAAVYA GHOSH"],
+  ["RA2611003010104","ANUSHKA MITRA"],["RA2611003010105","TRISHLA BISWAL"],["RA2611003010106","SHREYAS R NAIR"],
+  ["RA2611003010107","DIVYA RANJAN SINGH"],["RA2611003010108","NIHAL AGARWAL"],["RA2611003010109","ARGHYADIP DAS"],
+  ["RA2611003010110","YASASWI BANDARU"],["RA2611003010111","RUDRANIL GHOSH"],["RA2611003010112","ADITYA PRASAD KUSHWAHA"],
+  ["RA2611003010113","ANSH GARG"],["RA2611003010114","MADDALI PRISHA"],["RA2611003010116","SAKSHAM TOMAR"],
+  ["RA2611003010117","M MONITH KRISHNA"],["RA2611003010118","AISHWARY KUSHWAHA"],["RA2611003010119","AYUSH MISHRA"],
+  ["RA2611003010120","GORTY SIDHI AKSHARA"],["RA2611003010121","MEENAKSHI KUMARI"],["RA2611003010122","VASHU GAUTAM"],
+  ["RA2611003010123","PARAMVEER SINGH BHOGAL"],["RA2611003010124","MEDIPALLI CHARAN SIVA"],["RA2611003010125","SHIVAM SHASHANK"],
+  ["RA2611003010126","AYUSH CHANDRA"],["RA2611003010127","AKASH SHARMA"],["RA2611003010128","SOHAN CHOWDHURY"],
+  ["RA2611003010129","VISHNUVARDHANA JANITH SAI"],["RA2611003010130","ABINAV THANGARAJ"],["RA2611003010131","ANKUR KUMAR"],
+  ["RA2611003010132","SUHANI"],["RA2611003010133","ARCHIT GAURAV"],["RA2611003010134","SHOUNAK BHAUMIK"],
+  ["RA2611003010135","NAISHA JAISWAL"],["RA2611003010136","RISHIPARN SINGH"],["RA2611003010137","PALLAVI ROY"],
+  ["RA2611003010138","CHARANJOT SINGH GILL"],["RA2611003010139","SIVA GOKUL S"],["RA2611003010140","DRISHAYAN MAJUMDER"],
+  ["RA2611003010141","ARYA CHANDRA"],["RA2611003010142","KRISHNA JHA"],["RA2611003010143","YASH RAJ"],
+  ["RA2611003010144","VANSH GOEL"],["RA2611003010145","ANSHUL LAIJU SAM"],["RA2611003010146","GOURAV CHAKRABORTY"],
+  ["RA2611003010147","RITURAJ BHAKUNI"],["RA2611003010148","AMSURI GOWTHAM"],["RA2611003010149","BALAJI P"],
+  ["RA2611003010150","CHILAMALA PURUSHOTHAM"],["RA2611003010151","STEPHEN RAJ A"]
+];
+
+let currentUser = null;
+
+const sel = document.getElementById("regSelect");
+ROSTER.forEach(([reg, name]) => {
+  const opt = document.createElement("option");
+  opt.value = reg;
+  opt.textContent = `${reg} — ${name}`;
+  sel.appendChild(opt);
+});
+
+function getParams(reg) {
+  const n = parseInt(reg.slice(-3), 10);
+  const a = ((n * 7) % 11) + 2;
+  let b = ((n * 5 + 3) % 13) + 2;
+  if (a === b) b += 1;
+  return { a, b };
+}
+
+function loginStudent() {
+  const reg = sel.value;
+  const typed = document.getElementById("nameConfirm").value.trim().toUpperCase();
+  const err = document.getElementById("loginError");
+  if (!reg) { err.textContent = "Please select your Register Number."; return; }
+  const found = ROSTER.find(r => r[0] === reg);
+  if (!typed || !found[1].includes(typed) || typed.length < 3) {
+    err.textContent = "Name does not match the selected Register Number.";
+    return;
+  }
+  err.textContent = "";
+  const { a, b } = getParams(reg);
+  const folder = `${reg}_${found[1].replace(/ /g, "_")}`;
+  currentUser = { reg, name: found[1], a, b, folder };
+
+  document.getElementById("dispName").textContent = found[1];
+  document.getElementById("dispReg").textContent = reg;
+  document.getElementById("dispA").textContent = a;
+  document.getElementById("dispB").textContent = b;
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("studentHeader").classList.remove("hidden");
+  document.getElementById("workspace").classList.remove("hidden");
+
+  renderQuestions(a, b);
+  drawP1Plot();
+  drawP2Plot();
+  drawP3Plot();
+}
+
+function logoutStudent() {
+  currentUser = null;
+  document.getElementById("loginBox").classList.remove("hidden");
+  document.getElementById("studentHeader").classList.add("hidden");
+  document.getElementById("workspace").classList.add("hidden");
+}
+
+function showPeriod(num) {
+  [1, 2, 3].forEach(i => {
+    document.getElementById(`period${i}`).classList.toggle("hidden", i !== num);
+    document.querySelectorAll(".tab-btn")[i - 1].classList.toggle("active", i === num);
+  });
+  if (num === 1) Plotly.Plots.resize("plotP1");
+  if (num === 2) Plotly.Plots.resize("plotP2");
+  if (num === 3) Plotly.Plots.resize("plotP3");
+}
+
+function renderQuestions(a, b) {
+  document.getElementById("p1Questions").innerHTML = `
+    <ol>
+      <li><strong>Curve Tracing & Curvature:</strong> Trace $\\frac{x^2}{${a*a}} + \\frac{y^2}{${b*b}} = 1$ ($x=${a}\\cos t, y=${b}\\sin t$). Derive $\\rho$ in Cartesian & Parametric forms and evaluate at $t=\\frac{\\pi}{4}$.</li>
+      <li><strong>Polar Curvature & Pedal Equation:</strong> For $r = ${a}(1+\\cos\\theta)$, find the pedal equation ($p$-$r$) and compute $\\rho$ at $\\theta=\\frac{\\pi}{3}$.</li>
+      <li><strong>Circle of Curvature, Evolute & Envelope:</strong> For $y^2 = ${4*a}x$, find the Circle of Curvature at $(${a}, ${2*a})$, derive its Evolute $27(${a})y^2 = 4(x-${2*a})^3$, and prove the Envelope of Normals $y+tx = ${2*a}t + ${a}t^3$ gives the same evolute.</li>
+      <li><strong>Involute:</strong> Derive the parametric equations of the involute of $x=${b}\\cos\\theta, y=${b}\\sin\\theta$ from $\\theta=0$.</li>
+    </ol>`;
+  document.getElementById("p2Questions").innerHTML = `
+    <ol>
+      <li><strong>Limit, Continuity & Partials:</strong> Examine $f(x,y)=\\frac{${a*b}xy}{x^2+y^2}$ at $(0,0)$ along $y=mx$ and $y=x^2$; compute $f_x(0,0), f_y(0,0)$ and explain geometrically.</li>
+      <li><strong>Total Derivative & Implicit Function:</strong> Find $\\frac{dz}{dt}$ at $t=0$ for $z=${a}x^2y+${b}xy^2, x=e^{${a}t}, y=\\sin(${b}t)$; and $\\frac{dy}{dx}, \\frac{d^2y}{dx^2}$ for $x^3+y^3+${3*a*b}xy=${a**3+b**3}$.</li>
+      <li><strong>Euler’s Theorem (Degree 2):</strong> Verify $xu_x+yu_y=2u$ and $x^2u_{xx}+2xyu_{xy}+y^2u_{yy}=2u$ for $u=\\frac{${a}x^4+${b}y^4}{x^2+y^2}$.</li>
+      <li><strong>3-Variable Jacobian:</strong> Compute $J=\\frac{\\partial(x,y,z)}{\\partial(r,\\theta,\\phi)}$ for $x=${a}r\\sin\\theta\\cos\\phi, y=${b}r\\sin\\theta\\sin\\phi, z=${a*b}r\\cos\\theta$ and verify $J\\cdot J'=1$.</li>
+    </ol>`;
+  document.getElementById("p3Questions").innerHTML = `
+    <ol>
+      <li><strong>3rd-Order Taylor Series:</strong> Expand $f(x,y) = e^{${a}x}\\cos(${b}y)$ about $(0,0)$ up to 3rd-degree terms.</li>
+      <li><strong>Unconstrained Extrema:</strong> Find and classify all stationary points of $g(x,y) = ${a}x^3 + ${b}y^3 - ${3*a*b}xy$ via $rt-s^2$.</li>
+      <li><strong>Lagrange Multipliers:</strong> Find the minimum value of $T(x,y,z) = ${a}x^2 + ${b}y^2 + ${a*b}z^2$ subject to $x+y+z = ${a+b}$.</li>
+    </ol>`;
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function drawP1Plot() {
+  const { a, b } = currentUser;
+  const t0 = parseFloat(document.getElementById("tSlider").value);
+  document.getElementById("tValLabel").textContent = t0.toFixed(2);
+  const t = Array.from({length: 200}, (_, i) => (i / 199) * 2 * Math.PI);
+  const x = t.map(v => a * Math.cos(v));
+  const y = t.map(v => b * Math.sin(v));
+  const xEv = t.map(v => ((a*a - b*b) / a) * Math.pow(Math.cos(v), 3));
+  const yEv = t.map(v => ((b*b - a*a) / b) * Math.pow(Math.sin(v), 3));
+
+  const x0 = a * Math.cos(t0), y0 = b * Math.sin(t0);
+  const xc = ((a*a - b*b) / a) * Math.pow(Math.cos(t0), 3);
+  const yc = ((b*b - a*a) / b) * Math.pow(Math.sin(t0), 3);
+  const rho = Math.pow(a*a*Math.sin(t0)**2 + b*b*Math.cos(t0)**2, 1.5) / (a * b);
+  const xCirc = t.map(v => xc + rho * Math.cos(v));
+  const yCirc = t.map(v => yc + rho * Math.sin(v));
+
+  Plotly.newPlot("plotP1", [
+    { x, y, name: "Ellipse", line: { color: "#1d4ed8", width: 2.5 } },
+    { x: xEv, y: yEv, name: "Evolute", line: { color: "#dc2626", dash: "dash", width: 2 } },
+    { x: xCirc, y: yCirc, name: `Osculating Circle (ρ=${rho.toFixed(2)})`, line: { color: "#16a34a", dash: "dot" } },
+    { x: [x0, xc], y: [y0, yc], name: "Normal Radius", mode: "lines+markers", line: { color: "#0f172a" } }
+  ], { margin: { t: 20, b: 30, l: 35, r: 15 }, yaxis: { scaleanchor: "x" } });
+}
+
+function drawP2Plot() {
+  const { a, b } = currentUser;
+  const traces = [];
+  const grid = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2];
+  const fine = Array.from({length: 50}, (_, i) => 0.2 + (i / 49) * 1.0);
+  grid.forEach(u0 => {
+    traces.push({
+      x: fine.map(v => a*u0*u0 - b*v*v),
+      y: fine.map(v => 2*Math.sqrt(a*b)*u0*v),
+      mode: "lines", line: { color: "#2563eb", width: 1.5 }, showlegend: false
+    });
+  });
+  grid.forEach(v0 => {
+    traces.push({
+      x: fine.map(u => a*u*u - b*v0*v0),
+      y: fine.map(u => 2*Math.sqrt(a*b)*u*v0),
+      mode: "lines", line: { color: "#dc2626", dash: "dash", width: 1.5 }, showlegend: false
+    });
+  });
+  Plotly.newPlot("plotP2", traces, { margin: { t: 20, b: 35, l: 40, r: 15 }, xaxis: { title: "x" }, yaxis: { title: "y" } });
+}
+
+function drawP3Plot() {
+  const { a, b } = currentUser;
+  const maxR = Math.max(a, b) * 1.5;
+  const n = 50;
+  const xs = Array.from({length: n}, (_, i) => -1.5 + (i / (n - 1)) * (maxR + 1.5));
+  const ys = [...xs];
+  const z = ys.map(yv => xs.map(xv => a*xv**3 + b*yv**3 - 3*a*b*xv*yv));
+  const xStat = Math.cbrt(a * b * b), yStat = Math.cbrt(a * a * b);
+
+  Plotly.newPlot("plotP3", [
+    { x: xs, y: ys, z, type: "contour", colorscale: "Viridis" },
+    { x: [0, xStat], y: [0, yStat], mode: "markers+text", text: ["Saddle (0,0)", `Min (${xStat.toFixed(2)},${yStat.toFixed(2)})`], textposition: "top center", marker: { color: ["red", "white"], size: 10, line: { color: "black", width: 1.5 } } }
+  ], { margin: { t: 20, b: 35, l: 40, r: 15 } });
+}
+
+async function uploadToGitHub(path, contentBase64, message) {
+  const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+  let sha = null;
+  const check = await fetch(apiUrl, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
+  if (check.ok) { const existing = await check.json(); sha = existing.sha; }
+  const res = await fetch(apiUrl, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ message, content: contentBase64, ...(sha ? { sha } : {}) })
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+function toBase64Unicode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+async function submitPeriod(pNum) {
+  const statusEl = document.getElementById(`statusP${pNum}`);
+  const work = document.getElementById(`p${pNum}Work`).value.trim();
+  const obs  = document.getElementById(`p${pNum}Obs`).value.trim();
+  if (!work || !obs) { statusEl.style.color = "#dc2626"; statusEl.textContent = "Please fill in both your derivations and observations before submitting."; return; }
+
+  statusEl.style.color = "#1e3a8a";
+  statusEl.textContent = `Saving Period ${pNum} derivations, graph, and learning log...`;
+
+  try {
+    const mdContent = `# Period ${pNum} Worked Derivations — ${currentUser.name} (${currentUser.reg})\n**Parameters:** $a = ${currentUser.a}$, $b = ${currentUser.b}$\n\n## Step-by-Step Mathematical Derivations\n${work}\n\n## Visual Observation & Learning\n${obs}\n`;
+    await uploadToGitHub(`students/${currentUser.folder}/P${pNum}_Worked.md`, toBase64Unicode(mdContent), `${currentUser.reg}: Submit Period ${pNum} derivations`);
+
+    const imgDataUrl = await Plotly.toImage(`plotP${pNum}`, { format: "png", width: 800, height: 600 });
+    const imgBase64 = imgDataUrl.split(",")[1];
+    await uploadToGitHub(`students/${currentUser.folder}/P${pNum}_Visual.png`, imgBase64, `${currentUser.reg}: Upload Period ${pNum} visual`);
+
+    const allObs = `# Individual Live Demonstration & Learning Log — ${currentUser.name} (${currentUser.reg})\n**Parameters:** $a = ${currentUser.a}$, $b = ${currentUser.b}$\n\n## Period 1 Observation\n![P1](P1_Visual.png)\n${document.getElementById("p1Obs").value || "Pending"}\n\n## Period 2 Observation\n![P2](P2_Visual.png)\n${document.getElementById("p2Obs").value || "Pending"}\n\n## Period 3 Observation\n![P3](P3_Visual.png)\n${document.getElementById("p3Obs").value || "Pending"}\n`;
+    await uploadToGitHub(`students/${currentUser.folder}/OBSERVATIONS.md`, toBase64Unicode(allObs), `${currentUser.reg}: Update observations log`);
+
+    statusEl.style.color = "#16a34a";
+    statusEl.textContent = `✅ Period ${pNum} submitted successfully! Your instructor's live dashboard is updated.`;
+  } catch (err) {
+    statusEl.style.color = "#dc2626";
+    statusEl.textContent = "Submission error: " + err.message;
+  }
+}
+</script>
+</body>
+</html>
