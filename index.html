@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Differential Calculus Interactive Discovery Lab</title>
+  <title>Differential Calculus Interactive Discovery Worksheet</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <script>
@@ -12,18 +12,66 @@
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
   <style>
     :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 14px; }
-    .container { max-width: 920px; margin: 0 auto; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 14px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    input, textarea {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+    .container { max-width: 940px; margin: 0 auto; }
     .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .subcard { background: #f1f5f9; border-left: 4px solid var(--accent); border-radius: 8px; padding: 14px; margin: 16px 0; }
+    .guide-card { background: #eff6ff; border-left: 4px solid #1e3a8a; border-radius: 8px; padding: 14px; margin: 12px 0; }
     h1, h2, h3 { color: var(--primary); margin-top: 0; }
-    label { font-weight: 600; display: block; margin: 10px 0 5px; font-size: 14px; }
-    input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+    label { font-weight: 600; display: block; margin: 8px 0 4px; font-size: 14px; }
+    input[type="text"], input[type="number"], input[type="date"] {
+      width: 100%; padding: 9px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box;
+    }
+    .blank-box {
+      display: inline-block !important;
+      width: 115px !important;
+      padding: 5px 8px !important;
+      margin: 2px 4px;
+      border: 2px solid #2563eb !important;
+      border-radius: 6px !important;
+      background: #ffffff;
+      font-weight: 700;
+      color: #1e3a8a;
+      text-align: center;
+    }
+    .obs-input {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #94a3b8;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .derivation-line {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      line-height: 2.1;
+      font-size: 15px;
+    }
     input[type="range"] { width: 100%; }
-    textarea { min-height: 75px; font-family: system-ui, sans-serif; }
     button { background: var(--accent); color: #fff; border: none; padding: 11px 18px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; }
     button:hover { background: #1d4ed8; }
-    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 8px; }
+    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 8px; }
     .readout { background: #eff6ff; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 13px; margin-top: 8px; color: #1e3a8a; }
     .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
     .tab-btn { background: #e2e8f0; color: #1e293b; margin-top: 0; }
@@ -34,19 +82,27 @@
     .hint { font-size: 13px; color: #475569; margin-top: 4px; }
   </style>
 </head>
-<body>
+<body oncopy="return false;" oncut="return false;" onpaste="return false;" oncontextmenu="return false;">
 <div class="container">
   <div class="card">
-    <h1>Differential Calculus Interactive Discovery Lab</h1>
-    <p>Enter your Register Number and sign in with your Google Mail ID. Your parameters $(a, b)$ are derived from the <strong>last 3 digits</strong> of your Register Number and hidden inside your live interactive graphs—explore the plots to discover them!</p>
+    <h1>Differential Calculus Interactive Discovery Worksheet</h1>
+    <p>Enter your <strong>Register Number</strong> and <strong>Date of Birth</strong>, then sign in with your Google Mail ID. Your unique parameters $(a, b)$ are generated from your Register Number + DOB and embedded inside your live interactive graphs.</p>
 
     <div id="loginBox">
-      <label for="regInput">Register Number (Required — e.g., RA2611003010078)</label>
-      <input type="text" id="regInput" placeholder="Enter your Register Number" autocomplete="off" />
-      <div class="hint">Your last 3 digits uniquely configure your mystery curves.</div>
+      <div class="step-grid">
+        <div>
+          <label for="regInput">Register Number (e.g., RA2611003010078)</label>
+          <input type="text" id="regInput" placeholder="Enter Register Number" autocomplete="off" />
+        </div>
+        <div>
+          <label for="dobInput">Date of Birth</label>
+          <input type="date" id="dobInput" />
+        </div>
+      </div>
+      <div class="hint">Both your Register Number and Date of Birth uniquely bind your equations, graph discoveries, and submission record.</div>
       <br />
       <div id="g_id_onload"
-           data-client_id="771618195563-31b95u9tom7vgf70ba9lea6svhno1h6m.apps.googleusercontent.com"
+           data-client_id="PASTE_YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
            data-context="signin"
            data-ux_mode="popup"
            data-callback="handleGoogleLogin"
@@ -57,204 +113,345 @@
     </div>
 
     <div id="studentHeader" class="hidden">
-      <p><strong>Student:</strong> <span id="dispName"></span> | <strong>Reg No:</strong> <span id="dispReg"></span> | <strong>Email:</strong> <span id="dispEmail"></span></p>
-      <p class="hint"><em>Note: Your $(a, b)$ parameters are embedded directly inside the plots below—read them off the graphs!</em></p>
+      <p><strong>Student:</strong> <span id="dispName"></span> | <strong>Reg No:</strong> <span id="dispReg"></span> | <strong>DOB:</strong> <span id="dispDob"></span> | <strong>Email:</strong> <span id="dispEmail"></span></p>
+      <p class="hint"><em>Note: Copying/pasting is disabled. Fill in the missing derivation blanks and graph observation boxes below.</em></p>
     </div>
   </div>
 
   <div id="workspace" class="hidden">
     <div class="tabs">
-      <button class="tab-btn active" onclick="showPeriod(1)">Period 1: Blind Curve & Evolute</button>
-      <button class="tab-btn" onclick="showPeriod(2)">Period 2: Ridge & Jacobian</button>
+      <button class="tab-btn active" onclick="showPeriod(1)">Period 1: Curves & Evolutes</button>
+      <button class="tab-btn" onclick="showPeriod(2)">Period 2: Limits & Jacobians</button>
       <button class="tab-btn" onclick="showPeriod(3)">Period 3: Taylor & Tangency</button>
     </div>
 
     <!-- ==================== PERIOD 1 ==================== -->
     <div id="period1" class="card">
-      <h2>Period 1: Reverse-Engineer Your Mystery Curves</h2>
-<div class="subcard" style="background:#eff6ff; border-left-color:#1e3a8a;">
-  <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
-  <ul>
-    <li><strong>See Before You Differentiate:</strong> Instead of plugging numbers into a formula blindly, read your unique semi-axes <strong>$a$</strong> (right $x$-intercept) and <strong>$b$</strong> (top $y$-intercept) directly from the blue ellipse.</li>
-    <li><strong>Geometric Meaning of Curvature ($\rho$):</strong> As you drag slider $t$, watch the green <em>Osculating Circle</em> shrink at sharp bends and expand along flatter sections—your derivatives $x'(t), y'(t), x''(t), y''(t)$ prove mathematically why that circle has that exact radius and center $(\bar{x}, \bar{y})$.</li>
-    <li><strong>Envelopes & Evolutes in Action:</strong> Notice how the moving center of curvature traces the red <em>Evolute</em> curve, and how normal lines bundle up to form the sharp cusp $(2a, 0)$—turning four separate formulas into one connected geometric mechanism.</li>
-  </ul>
-</div>
+      <h2>Period 1: Visual Discovery & Guided Derivation Worksheet</h2>
+
+      <div class="guide-card">
+        <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
+        <ul>
+          <li><strong>Step 1 — Read $(a, b)$ From Your Graph:</strong> Tap/hover on the rightmost $x$-intercept $(a, 0)$ and topmost $y$-intercept $(0, b)$ of your blue ellipse below. Once verified, use these exact $(a, b)$ values across all three periods.</li>
+          <li><strong>Step 2 — Watch Curvature Move:</strong> Drag slider $t$ and observe how the green <em>Osculating Circle</em> shrinks at sharp bends and expands on flat sides while tracing the red <em>Evolute</em>.</li>
+        </ul>
+      </div>
+
+      <!-- STEP 1: PARAMETER DISCOVERY -->
+      <div class="subcard" style="border-left-color:#16a34a;">
+        <h3>Step 1: Discover & Lock Your $(a, b)$ From the Mystery Ellipse</h3>
+        <div class="step-grid">
+          <div><label>Right $x$-intercept ($a$):</label><input type="number" id="p1_a" placeholder="Read from plot" oninput="verifyAB()" /></div>
+          <div><label>Top $y$-intercept ($b$):</label><input type="number" id="p1_b" placeholder="Read from plot" oninput="verifyAB()" /></div>
+        </div>
+        <div id="abVerifyMsg" class="status-msg" style="color:#d97706;">🔒 Hover on the blue ellipse intercepts below and enter $a$ and $b$.</div>
+      </div>
+
+      <!-- VISUALIZATION 1A -->
       <div class="subcard">
-        <h3>1A. Mystery Ellipse & Evolute Discovery</h3>
-        <p>Inspect the blue ellipse below to read its semi-axes <strong>$a$</strong> (x-intercept) and <strong>$b$</strong> (y-intercept). Then slide <strong>$t$</strong> to your live target angle <strong>$t_0 = <span id="targetT1"></span>$ rad</strong>.</p>
-        <label>Slider $t$: <span id="t1Label">0.50</span> rad</label>
+        <h3>Visualization 1A: Ellipse $\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1$, Osculating Circle & Evolute</h3>
+        <label>Drag Parameter $t$: <span id="t1Label">0.50</span> rad (Move to your live target <strong>$t_0 = <span id="targetT1"></span>$ rad</strong>)</label>
         <input type="range" id="t1Slider" min="0" max="6.28" step="0.01" value="0.50" oninput="trackMove(1); drawP1_Ellipse();" />
         <div id="readoutP1_1" class="readout"></div>
         <div id="plotP1_1" class="plot-box"></div>
 
+        <h4>Visualization Play & Unique Observation (1A):</h4>
         <div class="step-grid">
-          <div><label>1. Discovered $a$ (from graph):</label><input type="number" id="p1_a" placeholder="Read x-intercept" /></div>
-          <div><label>2. Discovered $b$ (from graph):</label><input type="number" id="p1_b" placeholder="Read y-intercept" /></div>
-          <div><label>3. Center $\bar{x}$ at $t_0$:</label><input type="number" step="any" id="p1_xc" placeholder="Read from graph" /></div>
-          <div><label>4. Center $\bar{y}$ at $t_0$:</label><input type="number" step="any" id="p1_yc" placeholder="Read from graph" /></div>
+          <div>
+            <label>1. At which angle $t$ ($0$ or $1.57$) is $\rho$ smallest on your ellipse?</label>
+            <input type="text" class="obs-input" id="obs1_1" placeholder="Type angle & why it bends sharpest" />
+          </div>
+          <div>
+            <label>2. Center of curvature $(\bar{x}, \bar{y})$ read at $t_0$:</label>
+            <input type="text" class="obs-input" id="obs1_2" placeholder="e.g., (2.45, -1.80)" />
+          </div>
         </div>
       </div>
 
+      <!-- VISUALIZATION 1B -->
       <div class="subcard">
-        <h3>1B. Cardioid Pedal Hunt & Parabola Evolute Cusp</h3>
-        <p>Slide $\theta$ on your cardioid until the perpendicular distance $p$ equals <strong>half of $r$</strong> ($p = r/2$). Also inspect the red evolute cusp of your parabola below.</p>
-        <label>Cardioid Angle $\theta$: <span id="th1Label">1.00</span> rad</label>
+        <h3>Visualization 1B: Cardioid $r = a(1 + \cos\theta)$ & Pedal Distance</h3>
+        <label>Drag Angle $\theta$: <span id="th1Label">1.00</span> rad</label>
         <input type="range" id="th1Slider" min="0.1" max="6.2" step="0.02" value="1.00" oninput="trackMove(1); drawP1_Cardioid();" />
         <div id="readoutP1_2" class="readout"></div>
         <div id="plotP1_2" class="plot-box"></div>
 
+        <h4>Visualization Play & Unique Observation (1B):</h4>
         <div class="step-grid">
-          <div><label>5. Angle $\theta$ (in deg) where $p = r/2$:</label><input type="number" step="any" id="p1_theta" placeholder="e.g., 120" /></div>
-          <div><label>6. Parabola Evolute Cusp $(x_c, y_c)$:</label><input type="text" id="p1_cusp" placeholder="e.g., (18, 0)" /></div>
+          <div>
+            <label>3. Angle $\theta$ (in degrees) where pedal $p = r/2$:</label>
+            <input type="number" class="obs-input" id="obs1_3" placeholder="Slide θ until p = r/2" />
+          </div>
+          <div>
+            <label>4. Sharp cusp $(2a, 0)$ of your parabola evolute:</label>
+            <input type="text" class="obs-input" id="obs1_4" placeholder="e.g., (16, 0)" />
+          </div>
         </div>
       </div>
 
-      <label>7. Write your step-by-step curvature & evolute derivation in simple plain text (Copy-Paste Disabled):</label>
-      <textarea id="p1_steps" onpaste="return false;" placeholder="Type how you computed dx/dt, dy/dt, rho, and why the evolute cusp occurs at (2a, 0)..."></textarea>
+      <!-- FILL-IN-THE-BLANK DERIVATION WORKSHEET (PERIOD 1) -->
+      <div class="subcard" style="border-left-color:#7c3aed;">
+        <h3>Guided Derivation Worksheet — Fill in the Missing Boxes Only</h3>
+        <div class="derivation-line">
+          <strong>Q1 (Ellipse Curvature at $t = 0$):</strong> Since $x = a\cos t, y = b\sin t$, we get $x'(0) =$
+          <input type="number" class="blank-box" id="d1_1" placeholder="value" />, $y'(0) =$
+          <input type="number" class="blank-box" id="d1_2" placeholder="value" />, $x''(0) =$
+          <input type="number" class="blank-box" id="d1_3" placeholder="value" />, giving $\rho(0) = \frac{b^2}{a} =$
+          <input type="number" step="any" class="blank-box" id="d1_4" placeholder="decimal" />.
+        </div>
+        <div class="derivation-line">
+          <strong>Q2 (Cardioid Pedal & Curvature at $\theta = \pi/3$):</strong> From $p = r\cos(\theta/2)$ and $r = a(1+\cos\theta)$, the pedal constant in $r^3 = K p^2$ is $K = 2a =$
+          <input type="number" class="blank-box" id="d1_5" placeholder="2a" />, and $\rho(\pi/3) = \frac{4a}{3}\cos(30^\circ) =$
+          <input type="number" step="any" class="blank-box" id="d1_6" placeholder="decimal" />.
+        </div>
+        <div class="derivation-line">
+          <strong>Q3 (Parabola $y^2 = 4ax$ Evolute):</strong> Eliminating $t$ from normal $y + tx = 2at + at^3$ gives $27ay^2 = 4(x - C)^3$ where $C = 2a =$
+          <input type="number" class="blank-box" id="d1_7" placeholder="2a" />.
+        </div>
+        <div class="derivation-line">
+          <strong>Q4 (Your Personal Summary):</strong> In 1 sentence, describe how the osculating circle behaves as $t$ moves from $0$ to $\pi/2$:
+          <input type="text" class="obs-input" id="d1_8" placeholder="Type your unique observation in your own words..." />
+        </div>
+      </div>
 
-      <button onclick="submitPeriod(1)">Verify & Submit Period 1</button>
+      <button onclick="submitPeriod(1)">Verify & Submit Period 1 Worksheet</button>
       <div id="statusP1" class="status-msg"></div>
     </div>
 
     <!-- ==================== PERIOD 2 ==================== -->
     <div id="period2" class="card hidden">
-      <h2>Period 2: Hidden Ridge, Euler Scaling & Jacobian Matrix</h2>
-<div class="subcard" style="background:#eff6ff; border-left-color:#1e3a8a;">
-  <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
-  <ul>
-    <li><strong>Why Directional Limits Fail at $(0,0)$:</strong> Along the coordinate axes ($y=0$ or $x=0$), the blue slice stays flat at height $0$, so $f_x(0,0)=0$ and $f_y(0,0)=0$. Yet dragging slope $m$ lifts the red slice to a peak ridge $H_{\max} = \frac{ab}{2}$ along $y=x$—proving visually why partial derivatives can exist even when a 2D limit does not.</li>
-    <li><strong>Coordinate Stretching via the Jacobian:</strong> In Plot 2B, observe how straight grid lines in $(u,v)$ bend into parabolic curves in $(x,y)$. Evaluating the $2 \times 2$ Jacobian determinant $\frac{\partial(x,y)}{\partial(u,v)}$ measures the exact local area-stretching factor of that warp.</li>
-  </ul>
-</div>
+      <h2>Period 2: Partial Derivatives, Euler’s Theorem & Jacobians</h2>
+
+      <div class="guide-card">
+        <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
+        <ul>
+          <li><strong>Directional Limit vs. Axis Partials:</strong> Along the axes ($y=0$), the blue line stays at $0$ ($f_x(0,0)=0$). Dragging slope $m$ lifts the red line to a ridge $H_{\max} = \frac{ab}{2}$ at $m=1$, proving visually why the 2D limit fails at $(0,0)$.</li>
+          <li><strong>Jacobian Area Distortion:</strong> Plot 2B bends a straight $(u,v)$ grid into parabolas; your $2 \times 2$ Jacobian determinant measures that local stretching factor.</li>
+        </ul>
+      </div>
+
+      <!-- VISUALIZATION 2A -->
       <div class="subcard">
-        <h3>2A. Directional Limit Ridge Hunt</h3>
-        <p>Drag approach slope <strong>$m$</strong> along $y = mx$ to find the <strong>maximum height $H_{\max}$</strong> of the red slice line, and deduce the hidden product $ab = 2 H_{\max}$.</p>
-        <label>Slope $m$: <span id="mLabel">0.0</span></label>
+        <h3>Visualization 2A: Directional Limit Slice $f(x, mx) = \frac{ab m}{1 + m^2}$</h3>
+        <label>Drag Approach Slope $m$: <span id="mLabel">0.0</span></label>
         <input type="range" id="mSlider" min="-3" max="3" step="0.1" value="0.0" oninput="trackMove(2); drawP2_Limit();" />
         <div id="readoutP2_1" class="readout"></div>
         <div id="plotP2_1" class="plot-box"></div>
 
+        <h4>Visualization Play & Unique Observation (2A):</h4>
         <div class="step-grid">
-          <div><label>1. Slope $m$ giving max height:</label><input type="number" step="any" id="p2_m" placeholder="e.g., 1" /></div>
-          <div><label>2. Peak height $H_{\max}$ read from plot:</label><input type="number" step="any" id="p2_hmax" placeholder="Read from plot" /></div>
-          <div><label>3. Deduced product $a \cdot b$:</label><input type="number" step="any" id="p2_ab" placeholder="2 * H_max" /></div>
+          <div>
+            <label>1. Slope $m$ where red slice reaches peak height:</label>
+            <input type="number" step="any" class="obs-input" id="obs2_1" placeholder="Slide m to peak" />
+          </div>
+          <div>
+            <label>2. Peak height $H_{\max}$ read from plot:</label>
+            <input type="number" step="any" class="obs-input" id="obs2_2" placeholder="Read from blue bar" />
+          </div>
         </div>
       </div>
 
+      <!-- VISUALIZATION 2B -->
       <div class="subcard">
-        <h3>2B. Jacobian Transformation $(u, v) \mapsto (au^2 - bv^2, 2\sqrt{ab}\,uv)$</h3>
+        <h3>Visualization 2B: Jacobian Warping $(u, v) \mapsto (au^2 - bv^2, 2\sqrt{ab}\,uv)$</h3>
         <div id="readoutP2_3" class="readout"></div>
         <div id="plotP2_3" class="plot-box"></div>
-        <p>Evaluate the $2 \times 2$ Jacobian matrix entries at $(u, v) = (1, 1)$ using your $(a, b)$:</p>
+
+        <h4>Visualization Play & Unique Observation (2B):</h4>
         <div class="step-grid">
-          <div><label>$\partial x / \partial u = 2au$:</label><input type="number" step="any" id="p2_j11" /></div>
-          <div><label>$\partial x / \partial v = -2bv$:</label><input type="number" step="any" id="p2_j12" /></div>
-          <div><label>$\partial y / \partial u = 2\sqrt{ab}\,v$:</label><input type="number" step="any" id="p2_j21" /></div>
-          <div><label>$\partial y / \partial v = 2\sqrt{ab}\,u$:</label><input type="number" step="any" id="p2_j22" /></div>
+          <div>
+            <label>3. What shape do straight $(u,v)$ grid lines become?</label>
+            <input type="text" class="obs-input" id="obs2_3" placeholder="e.g., Confocal parabolas" />
+          </div>
+          <div>
+            <label>4. Why does $f_x(0,0)=0$ even though $H_{\max} > 0$?</label>
+            <input type="text" class="obs-input" id="obs2_4" placeholder="Type your unique observation" />
+          </div>
         </div>
       </div>
 
-      <label>4. Explain in your own words why $f_x(0,0)=0$ along the axes even though $H_{\max} > 0$ (Paste Disabled):</label>
-      <textarea id="p2_steps" onpaste="return false;" placeholder="Type your explanation clearly..."></textarea>
+      <!-- FILL-IN-THE-BLANK DERIVATION WORKSHEET (PERIOD 2) -->
+      <div class="subcard" style="border-left-color:#7c3aed;">
+        <h3>Guided Derivation Worksheet — Fill in the Missing Boxes Only</h3>
+        <div class="derivation-line">
+          <strong>Q1 (Limit Along $y = mx$):</strong> Substituting $y = mx$ into $\frac{abxy}{x^2+y^2}$ cancels $x^2$, leaving $\frac{abm}{1+m^2}$. At $m = 1$, this equals $\frac{ab}{2} =$
+          <input type="number" step="any" class="blank-box" id="d2_1" placeholder="ab/2" />.
+        </div>
+        <div class="derivation-line">
+          <strong>Q2 (Total Derivative at $t=0$):</strong> For $z = ax^2y + bxy^2$ with $x = e^{at}, y = \sin(bt)$, at $t=0$ we have $x(0)=1, y(0)=0, x'(0)=a, y'(0)=b$, so $\frac{dz}{dt}\big|_{t=0} = a(1)^2(b) =$
+          <input type="number" class="blank-box" id="d2_2" placeholder="ab" />.
+        </div>
+        <div class="derivation-line">
+          <strong>Q3 (Euler’s Theorem):</strong> $u(x,y) = \frac{ax^4 + by^4}{x^2+y^2}$ is homogeneous of degree $n =$
+          <input type="number" class="blank-box" id="d2_3" placeholder="degree" />, so $x u_x + y u_y =$
+          <input type="number" class="blank-box" id="d2_4" placeholder="n" />$u$.
+        </div>
+        <div class="derivation-line">
+          <strong>Q4 (2D Jacobian Matrix at $(u,v)=(1,1)$):</strong> $\frac{\partial x}{\partial u} = 2a =$
+          <input type="number" class="blank-box" id="d2_5" placeholder="2a" />, $\frac{\partial x}{\partial v} = -2b =$
+          <input type="number" class="blank-box" id="d2_6" placeholder="-2b" />, and $|J(1,1)| = 8ab =$
+          <input type="number" class="blank-box" id="d2_7" placeholder="8ab" />.
+        </div>
+      </div>
 
-      <button onclick="submitPeriod(2)">Verify & Submit Period 2</button>
+      <button onclick="submitPeriod(2)">Verify & Submit Period 2 Worksheet</button>
       <div id="statusP2" class="status-msg"></div>
     </div>
 
     <!-- ==================== PERIOD 3 ==================== -->
     <div id="period3" class="card hidden">
-      <h2>Period 3: Taylor Divergence, Saddle Valley & Lagrange Kiss</h2>
-<div class="subcard" style="background:#eff6ff; border-left-color:#1e3a8a;">
-  <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
-  <ul>
-    <li><strong>Where Polynomial Approximations Break Down:</strong> In Plot 3A, compare how closely the dashed 3rd-order Taylor polynomial hugs the solid exact curve $e^{ax}\cos(by)$ near $x=0$, and pinpoint the exact threshold where higher-order terms can no longer be ignored.</li>
-    <li><strong>Saddle Points vs. Lagrange Tangency:</strong> In Plot 3B, dragging energy level $k$ until the blue ellipse <em>just kisses</em> the red constraint line $x+y=a+b$ shows geometrically why optimal constrained extrema occur where gradient vectors align ($\nabla T = \lambda \nabla \phi$) at $(x^*, y^*) = (b, a)$.</li>
-  </ul>
-</div>
+      <h2>Period 3: Taylor Series, Extrema & Lagrange Multipliers</h2>
+
+      <div class="guide-card">
+        <h3>How This Period Connects Visual Discovery to Your Derivation</h3>
+        <ul>
+          <li><strong>Taylor Polynomial Accuracy:</strong> Plot 3A shows how the dashed 3rd-order Taylor polynomial hugs $e^{ax}\cos(by)$ near $x=0$ before bending away.</li>
+          <li><strong>Lagrange Tangency:</strong> Dragging energy $k$ until the blue ellipse <em>just kisses</em> the red line $x+y=a+b$ demonstrates geometrically why $\nabla T = \lambda \nabla \phi$ holds at the constrained optimum.</li>
+        </ul>
+      </div>
+
+      <!-- VISUALIZATION 3A -->
       <div class="subcard">
-        <h3>3A. Taylor Series Breakdown Hunt</h3>
-        <p>Hover where the dashed 3rd-order Taylor curve separates from the solid exact curve $e^{ax}\cos(by)$ along $y=x$.</p>
+        <h3>Visualization 3A: Exact $e^{ax}\cos(by)$ vs. 3rd-Order Taylor Series (Along $y=x$)</h3>
         <div id="plotP3_1" class="plot-box" onclick="trackMove(3)"></div>
+
+        <h4>Visualization Play & Unique Observation (3A):</h4>
         <div class="step-grid">
-          <div><label>1. $x$-value where gap exceeds $0.5$:</label><input type="number" step="any" id="p3_xdiv" placeholder="Hover on plot" /></div>
-          <div><label>2. Coefficient of $x$ in $e^{ax}\cos(by)$:</label><input type="number" step="any" id="p3_c1" placeholder="Equals a" /></div>
+          <div>
+            <label>1. Approximate $x$-value where dashed Taylor curve separates from solid curve:</label>
+            <input type="number" step="any" class="obs-input" id="obs3_1" placeholder="Hover on plot" />
+          </div>
+          <div>
+            <label>2. Why does the approximation stay accurate near $x=0$?</label>
+            <input type="text" class="obs-input" id="obs3_2" placeholder="Type your unique observation" />
+          </div>
         </div>
       </div>
 
+      <!-- VISUALIZATION 3B -->
       <div class="subcard">
-        <h3>3B. Lagrange Multiplier Tangency Slider</h3>
-        <p>Drag energy level <strong>$k$</strong> until the blue ellipse $ax^2 + by^2 = k$ <strong>just kisses</strong> the red line $x + y = a + b$ at a single point.</p>
-        <label>Energy Level $k$: <span id="kLabel">10</span></label>
+        <h3>Visualization 3B: Lagrange Tangency $ax^2 + by^2 = k$ on $x + y = a + b$</h3>
+        <label>Drag Energy Level $k$: <span id="kLabel">10</span></label>
         <input type="range" id="kSlider" min="5" max="1500" step="1" value="10" oninput="trackMove(3); drawP3_Lagrange();" />
         <div id="readoutP3_3" class="readout"></div>
         <div id="plotP3_3" class="plot-box"></div>
 
+        <h4>Visualization Play & Unique Observation (3B):</h4>
         <div class="step-grid">
-          <div><label>3. Tangency Level $k^*$:</label><input type="number" step="any" id="p3_kstar" placeholder="Read k when curves touch" /></div>
-          <div><label>4. Touching Point $(x^*, y^*)$:</label><input type="text" id="p3_pt" placeholder="e.g., (8, 9)" /></div>
+          <div>
+            <label>3. Energy $k^*$ when blue ellipse just kisses red line:</label>
+            <input type="number" step="any" class="obs-input" id="obs3_3" placeholder="Read k at tangency" />
+          </div>
+          <div>
+            <label>4. Touching point $(x^*, y^*)$ read from plot:</label>
+            <input type="text" class="obs-input" id="obs3_4" placeholder="e.g., (7, 9)" />
+          </div>
         </div>
       </div>
 
-      <label>5. Explain in your own words how contour lines around $(0,0)$ differ from a local minimum (Paste Disabled):</label>
-      <textarea id="p3_steps" onpaste="return false;" placeholder="Type your observation..."></textarea>
+      <!-- FILL-IN-THE-BLANK DERIVATION WORKSHEET (PERIOD 3) -->
+      <div class="subcard" style="border-left-color:#7c3aed;">
+        <h3>Guided Derivation Worksheet — Fill in the Missing Boxes Only</h3>
+        <div class="derivation-line">
+          <strong>Q1 (Taylor Coefficients of $e^{ax}\cos(by)$):</strong> $f(0,0) =$
+          <input type="number" class="blank-box" id="d3_1" placeholder="1" />, $f_x(0,0) = a =$
+          <input type="number" class="blank-box" id="d3_2" placeholder="a" />, $f_{xx}(0,0) = a^2 =$
+          <input type="number" class="blank-box" id="d3_3" placeholder="a²" />, $f_{yy}(0,0) = -b^2 =$
+          <input type="number" class="blank-box" id="d3_4" placeholder="-b²" />.
+        </div>
+        <div class="derivation-line">
+          <strong>Q2 (Hessian at $(0,0)$ for $g(x,y) = ax^3+by^3-3abxy$):</strong> At $(0,0)$, $r=0, t=0, s=-3ab =$
+          <input type="number" class="blank-box" id="d3_5" placeholder="-3ab" />, so $rt - s^2 = -9a^2b^2 =$
+          <input type="number" class="blank-box" id="d3_6" placeholder="negative" /> ($< 0 \implies$ Saddle Point).
+        </div>
+        <div class="derivation-line">
+          <strong>Q3 (Lagrange Multiplier Solution):</strong> Setting $2ax = 2by = \lambda$ with $x + y = a + b$ gives $x^* = b =$
+          <input type="number" class="blank-box" id="d3_7" placeholder="b" />, $y^* = a =$
+          <input type="number" class="blank-box" id="d3_8" placeholder="a" />, and $\lambda = 2ab =$
+          <input type="number" class="blank-box" id="d3_9" placeholder="2ab" />.
+        </div>
+      </div>
 
-      <button onclick="submitPeriod(3)">Verify & Submit Period 3</button>
+      <button onclick="submitPeriod(3)">Verify & Submit Period 3 Worksheet</button>
       <div id="statusP3" class="status-msg"></div>
     </div>
   </div>
 </div>
 
 <script>
-const SUBMISSION_BRIDGE_URL = "https://script.google.com/macros/s/AKfycby_iNq23NKW_nyqEgnJMPN73NVMf2Wcs4E_WR8VOdvCoB8aTtQIkybUaxoswl2jBOLtEg/exec";
+const SUBMISSION_BRIDGE_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 let currentUser = null;
 const telemetry = { 1: { start: Date.now(), moves: 0, keys: 0 }, 2: { start: Date.now(), moves: 0, keys: 0 }, 3: { start: Date.now(), moves: 0, keys: 0 } };
 
-function trackMove(p) { telemetry[p].moves++; }
+// Block keyboard copy/paste/select-all shortcuts globally
 document.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "TEXTAREA") {
-    const p = parseInt(e.target.id[1], 10);
-    if (telemetry[p]) telemetry[p].keys++;
+  if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "a", "u", "s"].includes(e.key.toLowerCase())) {
+    e.preventDefault();
+    return false;
+  }
+  if (e.target.tagName === "INPUT") {
+    const activeP = !document.getElementById("period1").classList.contains("hidden") ? 1 :
+                    (!document.getElementById("period2").classList.contains("hidden") ? 2 : 3);
+    telemetry[activeP].keys++;
   }
 });
+
+function trackMove(p) { telemetry[p].moves++; }
 
 function parseJwt(token) {
   const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
   return JSON.parse(decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
 }
 
-// Last 3 digits of Register Number -> unique (a, b)
-function getParamsLast3(reg) {
+// Combined Register Number (last 3 digits) + Date of Birth -> unique (a, b)
+function getParamsRegDOB(reg, dobStr) {
   const digits = reg.replace(/\D/g, "");
-  const last3 = digits.slice(-3).padStart(3, "0");
-  const d12 = parseInt(last3.slice(0, 2), 10);
-  const d3  = parseInt(last3.slice(2, 3), 10);
-  const a = (d12 % 12) + 3; // range 3..14
-  let b = d3 + 3;           // range 3..12
+  const regLast3 = parseInt(digits.slice(-3).padStart(3, "0"), 10);
+  const dobParts = dobStr.split("-"); // YYYY-MM-DD
+  const birthMonth = parseInt(dobParts[1], 10);
+  const birthDay   = parseInt(dobParts[2], 10);
+
+  const a = ((regLast3 + birthDay) % 11) + 3;      // range 3..13
+  let b   = ((regLast3 * 3 + birthMonth) % 10) + 3; // range 3..12
   if (a === b) b += 1;
-  return { a, b, last3 };
+  return { a, b, regLast3 };
 }
 
 function handleGoogleLogin(response) {
   const reg = document.getElementById("regInput").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const dob = document.getElementById("dobInput").value;
   const err = document.getElementById("loginError");
+
   if (reg.length < 6 || !/\d{3}$/.test(reg)) {
-    err.textContent = "Please type your full Register Number ending in 3 digits BEFORE clicking Sign In.";
+    err.textContent = "Please enter your full Register Number ending in 3 digits BEFORE signing in.";
+    return;
+  }
+  if (!dob) {
+    err.textContent = "Please select your Date of Birth BEFORE signing in.";
     return;
   }
   err.textContent = "";
+
   const payload = parseJwt(response.credential);
   const email = payload.email.toLowerCase();
   const name = payload.name.toUpperCase().replace(/[^A-Z ]/g, "").trim();
-  const { a, b, last3 } = getParamsLast3(reg);
-  const targetT1 = (0.35 + (parseInt(last3, 10) % 50) * 0.02).toFixed(2);
+  const { a, b, regLast3 } = getParamsRegDOB(reg, dob);
+  const targetT1 = (0.35 + (regLast3 % 50) * 0.02).toFixed(2);
   const folder = `${reg}_${name.replace(/ /g, "_")}`;
 
-  currentUser = { reg, email, name, a, b, targetT1: parseFloat(targetT1), folder };
+  currentUser = { reg, dob, email, name, a, b, targetT1: parseFloat(targetT1), folder };
   document.getElementById("dispName").textContent = name;
   document.getElementById("dispReg").textContent = reg;
+  document.getElementById("dispDob").textContent = dob;
   document.getElementById("dispEmail").textContent = email;
   document.getElementById("targetT1").textContent = targetT1;
+
+  // Scale Period 3 Lagrange slider dynamically
+  const kMax = Math.round(a * b * (a + b) * 1.6);
+  const kSlider = document.getElementById("kSlider");
+  kSlider.max = kMax;
+  kSlider.step = Math.max(1, Math.round(kMax / 200));
+  kSlider.value = Math.round(kMax * 0.15);
 
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("studentHeader").classList.remove("hidden");
@@ -273,6 +470,20 @@ function showPeriod(num) {
   window.dispatchEvent(new Event("resize"));
 }
 
+function verifyAB() {
+  const { a, b } = currentUser;
+  const ua = parseInt(document.getElementById("p1_a").value, 10);
+  const ub = parseInt(document.getElementById("p1_b").value, 10);
+  const msg = document.getElementById("abVerifyMsg");
+  if (ua === a && ub === b) {
+    msg.style.color = "#16a34a";
+    msg.textContent = `✅ Verified! Your Reg No + DOB parameters are a = ${a}, b = ${b}. Use these in all derivation boxes below!`;
+  } else {
+    msg.style.color = "#d97706";
+    msg.textContent = "🔒 Tap the rightmost (a, 0) and topmost (0, b) intercepts on the blue ellipse below.";
+  }
+}
+
 function drawP1_Ellipse() {
   const { a, b } = currentUser;
   const t0 = parseFloat(document.getElementById("t1Slider").value);
@@ -281,7 +492,7 @@ function drawP1_Ellipse() {
   const x0 = a*Math.cos(t0), y0 = b*Math.sin(t0);
   const xc = ((a*a - b*b)/a)*Math.pow(Math.cos(t0), 3), yc = ((b*b - a*a)/b)*Math.pow(Math.sin(t0), 3);
   const rho = Math.pow(a*a*Math.sin(t0)**2 + b*b*Math.cos(t0)**2, 1.5) / (a * b);
-  document.getElementById("readoutP1_1").textContent = `Current t=${t0.toFixed(2)} | Point=(${x0.toFixed(2)}, ${y0.toFixed(2)}) | Center=(${xc.toFixed(2)}, ${yc.toFixed(2)}) | ρ=${rho.toFixed(3)}`;
+  document.getElementById("readoutP1_1").textContent = `t=${t0.toFixed(2)} | Point=(${x0.toFixed(2)}, ${y0.toFixed(2)}) | Center=(${xc.toFixed(2)}, ${yc.toFixed(2)}) | ρ=${rho.toFixed(3)}`;
   Plotly.newPlot("plotP1_1", [
     { x: t.map(v => a*Math.cos(v)), y: t.map(v => b*Math.sin(v)), name: "Mystery Ellipse", line: { color: "#1d4ed8", width: 2.5 } },
     { x: t.map(v => ((a*a-b*b)/a)*Math.cos(v)**3), y: t.map(v => ((b*b-a*a)/b)*Math.sin(v)**3), name: "Evolute", line: { color: "#dc2626", dash: "dash" } },
@@ -296,7 +507,7 @@ function drawP1_Cardioid() {
   document.getElementById("th1Label").textContent = th0.toFixed(2);
   const th = Array.from({length: 200}, (_, i) => (i/199)*2*Math.PI);
   const r0 = a*(1 + Math.cos(th0)), p0 = r0*Math.cos(th0/2);
-  document.getElementById("readoutP1_2").textContent = `Angle θ=${(th0*180/Math.PI).toFixed(1)}° | r=${r0.toFixed(3)} | Pedal p=${p0.toFixed(3)} | Parabola Evolute Cusp=(${2*a}, 0)`;
+  document.getElementById("readoutP1_2").textContent = `θ=${(th0*180/Math.PI).toFixed(1)}° | r=${r0.toFixed(3)} | Pedal p=${p0.toFixed(3)} | Parabola Cusp=(${2*a}, 0)`;
   Plotly.newPlot("plotP1_2", [
     { x: th.map(v => a*(1+Math.cos(v))*Math.cos(v)), y: th.map(v => a*(1+Math.cos(v))*Math.sin(v)), name: "Cardioid", line: { color: "#7c3aed", width: 2.5 } },
     { x: [0, r0*Math.cos(th0)], y: [0, r0*Math.sin(th0)], name: "Radius r", mode: "lines+markers", line: { color: "#dc2626" } }
@@ -308,11 +519,10 @@ function drawP2_Limit() {
   const m = parseFloat(document.getElementById("mSlider").value);
   document.getElementById("mLabel").textContent = m.toFixed(1);
   const lim = (a * b * m) / (1 + m * m);
-  const xs = [-2, 2];
   document.getElementById("readoutP2_1").textContent = `Along y = ${m.toFixed(1)}x => Slice Height f(x, mx) = ${lim.toFixed(3)}`;
   Plotly.newPlot("plotP2_1", [
-    { x: xs, y: [lim, lim], name: "Directional Slice", line: { color: "#dc2626", width: 3 } },
-    { x: xs, y: [0, 0], name: "Axis Slice (y=0)", line: { color: "#1d4ed8", dash: "dash" } }
+    { x: [-2, 2], y: [lim, lim], name: "Directional Slice", line: { color: "#dc2626", width: 3 } },
+    { x: [-2, 2], y: [0, 0], name: "Axis Slice (y=0)", line: { color: "#1d4ed8", dash: "dash" } }
   ], { margin: { t: 10, b: 25, l: 35, r: 10 }, yaxis: { range: [-a*b*0.6, a*b*0.6] } });
 }
 
@@ -323,7 +533,7 @@ function drawP2_Jacobian() {
   const fine = Array.from({length: 40}, (_, i) => 0.2 + (i/39)*0.9);
   grid.forEach(u0 => traces.push({ x: fine.map(v => a*u0*u0 - b*v*v), y: fine.map(v => 2*Math.sqrt(a*b)*u0*v), mode: "lines", line: { color: "#2563eb" }, showlegend: false }));
   grid.forEach(v0 => traces.push({ x: fine.map(u => a*u*u - b*v0*v0), y: fine.map(u => 2*Math.sqrt(a*b)*u*v0), mode: "lines", line: { color: "#dc2626", dash: "dash" }, showlegend: false }));
-  document.getElementById("readoutP2_3").textContent = `Warped Grid for your (a, b) | Evaluate ∂(x,y)/∂(u,v) at (1,1)`;
+  document.getElementById("readoutP2_3").textContent = `Warped (u,v) Grid | Evaluate ∂(x,y)/∂(u,v) at (1,1)`;
   Plotly.newPlot("plotP2_3", traces, { margin: { t: 10, b: 25, l: 35, r: 10 } });
 }
 
@@ -357,41 +567,59 @@ function toBase64Unicode(str) { return btoa(unescape(encodeURIComponent(str))); 
 async function submitPeriod(pNum) {
   const statusEl = document.getElementById(`statusP${pNum}`);
   const { a, b } = currentUser;
-  let score = 0, summary = "";
+  let score = 0, report = "";
 
   if (pNum === 1) {
     const ua = parseInt(document.getElementById("p1_a").value, 10);
     const ub = parseInt(document.getElementById("p1_b").value, 10);
-    const uxc = parseFloat(document.getElementById("p1_xc").value);
-    const exc = ((a*a - b*b)/a)*Math.pow(Math.cos(currentUser.targetT1), 3);
-    if (ua === a) score += 25;
-    if (ub === b) score += 25;
-    if (Math.abs(uxc - exc) < 0.25) score += 25;
-    if (document.getElementById("p1_steps").value.trim().length >= 30) score += 25;
-    summary = `Discovered a=${ua} (true ${a}), b=${ub} (true ${b}), xc=${uxc} (true ${exc.toFixed(2)})\nSteps: ${document.getElementById("p1_steps").value}`;
+    const d1 = parseFloat(document.getElementById("d1_1").value);
+    const d2 = parseFloat(document.getElementById("d1_2").value);
+    const d3 = parseFloat(document.getElementById("d1_3").value);
+    const d4 = parseFloat(document.getElementById("d1_4").value);
+    const d5 = parseFloat(document.getElementById("d1_5").value);
+    const d7 = parseFloat(document.getElementById("d1_7").value);
+    if (ua === a && ub === b) score += 20;
+    if (d1 === 0 && d2 === b && d3 === -a) score += 20;
+    if (Math.abs(d4 - (b*b)/a) < 0.1) score += 20;
+    if (d5 === 2*a && d7 === 2*a) score += 20;
+    if (document.getElementById("d1_8").value.trim().length >= 15) score += 20;
+    report = `* Discovered (a,b): (${ua}, ${ub}) [True: (${a}, ${b})]\n* Graph Obs 1A: ${document.getElementById("obs1_1").value} | Center at t0: ${document.getElementById("obs1_2").value}\n* Graph Obs 1B: θ(p=r/2)=${document.getElementById("obs1_3").value}°, Cusp=${document.getElementById("obs1_4").value}\n* Derivation Blanks: x'(0)=${d1}, y'(0)=${d2}, x''(0)=${d3}, ρ(0)=${d4}, K=${d5}, ρ(π/3)=${document.getElementById("d1_6").value}, C=${d7}\n* Personal Takeaway: ${document.getElementById("d1_8").value}`;
   } else if (pNum === 2) {
-    const uab = parseFloat(document.getElementById("p2_ab").value);
-    const j11 = parseFloat(document.getElementById("p2_j11").value);
-    if (Math.abs(uab - a*b) < 0.5) score += 50;
-    if (Math.abs(j11 - 2*a) < 0.1) score += 25;
-    if (document.getElementById("p2_steps").value.trim().length >= 30) score += 25;
-    summary = `Deduced ab=${uab} (true ${a*b}), J11=${j11} (true ${2*a})\nExplanation: ${document.getElementById("p2_steps").value}`;
+    const d1 = parseFloat(document.getElementById("d2_1").value);
+    const d2 = parseFloat(document.getElementById("d2_2").value);
+    const d3 = parseInt(document.getElementById("d2_3").value, 10);
+    const d5 = parseFloat(document.getElementById("d2_5").value);
+    const d6 = parseFloat(document.getElementById("d2_6").value);
+    const d7 = parseFloat(document.getElementById("d2_7").value);
+    if (Math.abs(d1 - (a*b)/2) < 0.1) score += 25;
+    if (d2 === a*b) score += 20;
+    if (d3 === 2) score += 15;
+    if (d5 === 2*a && d6 === -2*b && d7 === 8*a*b) score += 25;
+    if (document.getElementById("obs2_4").value.trim().length >= 12) score += 15;
+    report = `* Graph Obs 2A: Peak m=${document.getElementById("obs2_1").value}, H_max=${document.getElementById("obs2_2").value}\n* Graph Obs 2B: Grid shape=${document.getElementById("obs2_3").value} | Reason fx(0,0)=0: ${document.getElementById("obs2_4").value}\n* Derivation Blanks: Limit(m=1)=${d1}, dz/dt(0)=${d2}, Euler degree n=${d3}, J11=${d5}, J12=${d6}, |J|=${d7}`;
   } else if (pNum === 3) {
-    const uk = parseFloat(document.getElementById("p3_kstar").value);
-    const trueK = a*b*b + b*a*a;
-    if (Math.abs(uk - trueK) <= 4) score += 50;
-    if (parseInt(document.getElementById("p3_c1").value, 10) === a) score += 25;
-    if (document.getElementById("p3_steps").value.trim().length >= 30) score += 25;
-    summary = `Tangency k*=${uk} (true ${trueK})\nObservation: ${document.getElementById("p3_steps").value}`;
+    const d1 = parseFloat(document.getElementById("d3_1").value);
+    const d2 = parseFloat(document.getElementById("d3_2").value);
+    const d3 = parseFloat(document.getElementById("d3_3").value);
+    const d4 = parseFloat(document.getElementById("d3_4").value);
+    const d5 = parseFloat(document.getElementById("d3_5").value);
+    const d7 = parseFloat(document.getElementById("d3_7").value);
+    const d8 = parseFloat(document.getElementById("d3_8").value);
+    const d9 = parseFloat(document.getElementById("d3_9").value);
+    if (d1 === 1 && d2 === a && d3 === a*a && d4 === -b*b) score += 35;
+    if (d5 === -3*a*b) score += 20;
+    if (d7 === b && d8 === a && d9 === 2*a*b) score += 30;
+    if (document.getElementById("obs3_2").value.trim().length >= 12) score += 15;
+    report = `* Graph Obs 3A: Divergence x=${document.getElementById("obs3_1").value} | Reason: ${document.getElementById("obs3_2").value}\n* Graph Obs 3B: Tangency k*=${document.getElementById("obs3_3").value}, Point=${document.getElementById("obs3_4").value}\n* Derivation Blanks: f(0,0)=${d1}, fx=${d2}, fxx=${d3}, fyy=${d4}, s=${d5}, rt-s²=${document.getElementById("d3_6").value}, x*=${d7}, y*=${d8}, λ=${d9}`;
   }
 
   const elapsed = Math.round((Date.now() - telemetry[pNum].start) / 1000);
-  const flag = (telemetry[pNum].moves >= 2 && telemetry[pNum].keys >= 25) ? "✅ VERIFIED HANDS-ON" : "⚠️ LOW GRAPH INTERACTION";
+  const flag = (telemetry[pNum].moves >= 2 && telemetry[pNum].keys >= 10) ? "✅ VERIFIED HANDS-ON" : "⚠️ LOW GRAPH INTERACTION";
   statusEl.style.color = "#1e3a8a";
-  statusEl.textContent = "Saving verified submission to instructor folder...";
+  statusEl.textContent = "Saving verified worksheet to instructor repository...";
 
   try {
-    const md = `# Period ${pNum} Discovery Report — ${currentUser.name} (${currentUser.reg})\n* **Email:** ${currentUser.email}\n* **Last-3-Digit Seed:** a=${a}, b=${b}\n* **Auto-Score:** **${score}/100** | **Audit:** ${flag} (Slider Moves: ${telemetry[pNum].moves}, Keystrokes: ${telemetry[pNum].keys}, Time: ${elapsed}s)\n\n## Student Work\n${summary}\n`;
+    const md = `# Period ${pNum} Discovery Worksheet — ${currentUser.name} (${currentUser.reg})\n* **Date of Birth:** ${currentUser.dob} | **Email:** ${currentUser.email}\n* **RegNo+DOB Seed Parameters:** a = ${a}, b = ${b}\n* **Auto-Score:** **${score}/100** | **Audit:** ${flag} (Slider Moves: ${telemetry[pNum].moves}, Keystrokes: ${telemetry[pNum].keys}, Time: ${elapsed}s)\n\n## Student Responses\n${report}\n`;
     const plotId = pNum === 1 ? "plotP1_1" : (pNum === 2 ? "plotP2_3" : "plotP3_3");
     const img = await Plotly.toImage(plotId, { format: "png", width: 800, height: 600 });
 
@@ -407,7 +635,7 @@ async function submitPeriod(pNum) {
     const out = await res.json();
     if (!out.ok) throw new Error(out.error);
     statusEl.style.color = "#16a34a";
-    statusEl.textContent = `✅ Submitted! Auto-Verified Score: ${score}/100 (${flag})`;
+    statusEl.textContent = `✅ Period ${pNum} Submitted! Auto-Verified Score: ${score}/100 (${flag})`;
   } catch (e) {
     statusEl.style.color = "#dc2626";
     statusEl.textContent = "Error: " + e.message;
