@@ -59,28 +59,25 @@
         <tr><td colspan="5">Scanning classroom activity...</td></tr>
       </tbody>
     </table>
-    <div class="sync-note">Auto-refreshes every 20s | Last synced: <span id="lastSync">—</span></div>
+    <div class="sync-note">Auto-refreshes every 25s | Last synced: <span id="lastSync">—</span></div>
   </div>
 
 <script>
 const OWNER = "athithansmath-cell";
 const REPO  = "Calculus-Lab-2026";
+const RADAR_BRIDGE_URL = "https://script.google.com/macros/s/AKfycby_iNq23NKW_nyqEgnJMPN73NVMf2Wcs4E_WR8VOdvCoB8aTtQIkybUaxoswl2jBOLtEg/exec?action=radar";
 let cachedStudents = [];
 
 async function loadRadar() {
   try {
-    const treeRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/main?recursive=1&t=${Date.now()}`);
-    if (!treeRes.ok) throw new Error(`GitHub API ${treeRes.status}`);
-    const treeData = await treeRes.json();
-    const files = treeData.tree || [];
+    const res = await fetch(`${RADAR_BRIDGE_URL}&t=${Date.now()}`);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
 
-    const statusFiles = files.filter(f => /^live_status\/[^/]+\.json$/.test(f.path));
-
-    // Map submitted periods per Register Number
     const subMap = {};
     let p1Total = 0, p2Total = 0, p3Total = 0;
-    files.forEach(f => {
-      const m = f.path.match(/^students\/([^_/]+)_[^/]+\/P([123])_Worked\.md$/);
+    (data.subFiles || []).forEach(path => {
+      const m = path.match(/^students\/([^_/]+)_[^/]+\/P([123])_Worked\.md$/);
       if (m) {
         const reg = m[1], per = m[2];
         if (!subMap[reg]) subMap[reg] = { 1: false, 2: false, 3: false };
@@ -91,18 +88,10 @@ async function loadRadar() {
       }
     });
 
-    const students = await Promise.all(statusFiles.map(async f => {
-      try {
-        const r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${f.path}?t=${Date.now()}`);
-        const obj = await r.json();
-        obj.subs = subMap[obj.reg] || { 1: false, 2: false, 3: false };
-        return obj;
-      } catch (e) {
-        return null;
-      }
-    }));
-
-    cachedStudents = students.filter(Boolean).sort((a, b) => a.reg.localeCompare(b.reg));
+    cachedStudents = (data.students || []).map(s => ({
+      ...s,
+      subs: subMap[s.reg] || { 1: false, 2: false, 3: false }
+    })).sort((a, b) => a.reg.localeCompare(b.reg));
 
     document.getElementById("activeCount").textContent = cachedStudents.length;
     document.getElementById("p1Count").textContent = p1Total;
@@ -141,11 +130,11 @@ function renderTable() {
       </td>
       <td>${hasAnySub ? `<a href="https://github.com/${OWNER}/${REPO}/tree/main/students/${folder}" target="_blank">View</a>` : `<span style="color:#94a3b8;">—</span>`}</td>
     </tr>`;
-  }).join("") : `<tr><td colspan="5">No matching active students yet.</td></tr>`;
+  }).join("") : `<tr><td colspan="5">No active students logged in yet.</td></tr>`;
 }
 
 loadRadar();
-setInterval(loadRadar, 20000);
+setInterval(loadRadar, 25000);
 </script>
 </body>
 </html>
