@@ -146,7 +146,34 @@
         </div>
         <div id="abVerifyMsg" class="status-msg" style="color:#d97706;">🔒 Hover on the blue ellipse intercepts below and enter $a$ and $b$.</div>
       </div>
+<!-- OPTIONAL BONUS CRYPTOGRAPHY CHALLENGE -->
+<div class="subcard" style="background:#fefce8; border-left-color:#eab308;">
+  <h3>Bonus Detective Challenge (+10 Marks): Crack the Formula Behind $(a, b)$</h3>
+  <p>You found $a$ and $b$ visually from the ellipse axes—now reverse-engineer the mathematical rule linking your <strong>Last 3 Reg Digits ($N$)</strong>, <strong>Birth Day ($D$)</strong>, and <strong>Birth Month ($M$)</strong> to $(a, b)$!</p>
+  
+  <button type="button" onclick="revealModHint()" style="background:#ca8a04; padding:7px 14px; font-size:13px;">Reveal Next Mathematical Clue</button>
+  <div id="modHintBox" class="readout" style="background:#fef9c3; border-color:#fde047; color:#854d0e; margin-top:8px;">
+    Click "Reveal Next Mathematical Clue" if you want a hint on the modular arithmetic rule!
+  </div>
 
+  <div class="step-grid" style="margin-top:10px;">
+    <div>
+      <label>Your Last 3 Reg Digits ($N$):</label>
+      <input type="number" id="bonus_N" placeholder="e.g., 102" />
+    </div>
+    <div>
+      <label>Remainder $(N + \text{Day}) \bmod 11$:</label>
+      <input type="number" id="bonus_remA" placeholder="0 to 10" oninput="checkBonusMod()" />
+    </div>
+    <div>
+      <label>Remainder $(3N + \text{Month}) \bmod 10$:</label>
+      <input type="number" id="bonus_remB" placeholder="0 to 9" oninput="checkBonusMod()" />
+    </div>
+  </div>
+  <div id="bonusStatus" class="status-msg"></div>
+</div>
+
+      
       <!-- VISUALIZATION 1A -->
       <div class="subcard">
         <h3>Visualization 1A: Ellipse $\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1$, Osculating Circle & Evolute</h3>
@@ -483,6 +510,41 @@ function verifyAB() {
     msg.textContent = "🔒 Tap the rightmost (a, 0) and topmost (0, b) intercepts on the blue ellipse below.";
   }
 }
+
+let hintStep = 0;
+function revealModHint() {
+  hintStep = Math.min(hintStep + 1, 3);
+  const hints = [
+    "",
+    "Clue 1: Subtract 3 from your ellipse intercepts (a - 3) and (b - 3). Those two numbers are remainders!",
+    "Clue 2: (a - 3) is the remainder when (Last3Digits + BirthDay) is divided by 11.",
+    "Clue 3: (b - 3) is the remainder when (3 × Last3Digits + BirthMonth) is divided by 10 (shifted by +1 only if a = b)."
+  ];
+  document.getElementById("modHintBox").textContent = hints[hintStep];
+}
+
+function checkBonusMod() {
+  const { a, b, regLast3 } = currentUser;
+  const dobParts = currentUser.dob.split("-");
+  const trueRemA = (regLast3 + parseInt(dobParts[2], 10)) % 11;
+  const trueRemB = (regLast3 * 3 + parseInt(dobParts[1], 10)) % 10;
+
+  const uRemA = parseInt(document.getElementById("bonus_remA").value, 10);
+  const uRemB = parseInt(document.getElementById("bonus_remB").value, 10);
+  const msg = document.getElementById("bonusStatus");
+
+  if (uRemA === trueRemA && uRemB === trueRemB) {
+    msg.style.color = "#16a34a";
+    msg.textContent = `🎉 Formula Cracked! (${trueRemA} + 3 = ${a}) and (${trueRemB} + 3 = ${b}) — you reverse-engineered the exact seed!`;
+  } else {
+    msg.style.color = "#854d0e";
+    msg.textContent = "Keep testing remainders—use the clues above if needed!";
+  }
+}
+
+
+
+  
 
 function drawP1_Ellipse() {
   const { a, b } = currentUser;
