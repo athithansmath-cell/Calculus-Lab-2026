@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Class Monitor — Calculus Lab</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 12px; }
+    .card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 12px; }
+    h2 { margin: 0 0 6px; color: #1e3a8a; font-size: 18px; }
+    .meta { font-size: 13px; color: #475569; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 8px 6px; text-align: left; }
+    th { background: #eff6ff; color: #1e3a8a; }
+    a { color: #2563eb; text-decoration: none; font-weight: 600; }
+    button { background: #2563eb; color: #fff; border: none; padding: 7px 12px; border-radius: 6px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Live Lab Submission Monitor</h2>
+    <div class="meta">Auto-refreshes every 20s | Total Students Submitted: <strong id="count">0</strong> <button onclick="loadLive()">Refresh Now</button></div>
+    <table>
+      <thead><tr><th>Student (Reg No)</th><th>P1</th><th>P2</th><th>P3</th><th>Folder</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="5">Loading live submissions...</td></tr></tbody>
+    </table>
+  </div>
+
+<script>
+const OWNER = "athithansmath-cell", REPO = "Calculus-Lab-2026";
+async function loadLive() {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/main?recursive=1`);
+    const data = await res.json();
+    const map = {};
+    (data.tree || []).forEach(item => {
+      const m = item.path.match(/^students\/([^/]+)\/P([123])_Worked\.md$/);
+      if (m) {
+        if (!map[m[1]]) map[m[1]] = { 1: "—", 2: "—", 3: "—" };
+        map[m[1]][m[2]] = "✅";
+      }
+    });
+    const keys = Object.keys(map).sort();
+    document.getElementById("count").textContent = keys.length;
+    document.getElementById("rows").innerHTML = keys.length ? keys.map(k =>
+      `<tr><td>${k.replace("_", "<br><small>")}</td><td>${map[k][1]}</td><td>${map[k][2]}</td><td>${map[k][3]}</td><td><a href="https://github.com/${OWNER}/${REPO}/tree/main/students/${k}" target="_blank">Open</a></td></tr>`
+    ).join("") : `<tr><td colspan="5">No submissions yet.</td></tr>`;
+  } catch (e) {
+    document.getElementById("rows").innerHTML = `<tr><td colspan="5">Error loading: ${e.message}</td></tr>`;
+  }
+}
+loadLive();
+setInterval(loadLive, 20000);
+</script>
+</body>
+</html>
