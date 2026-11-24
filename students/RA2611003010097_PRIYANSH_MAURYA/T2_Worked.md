@@ -1,4 +1,4 @@
 # Task 2 Exam Mastery Report — PRIYANSH MAURYA (RA2611003010097)
 * **DOB:** 2008-08-18 | **Seed:** a=8, b=12
-* **Score:** **100/100** | **Audit:** ✅ VERIFIED HANDS-ON (Moves: 15, Time: 1501s)
+* **Score:** **100/100** | **Audit:** ✅ VERIFIED HANDS-ON (Moves: 15, Time: 1508s)
 * **Summary:** Eigen=(20, -4)
