@@ -3,102 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Classroom Radar — Calculus Lab</title>
+  <title>Live 8-Task Classroom Radar</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 10px; }
-    .card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 12px; }
-    h2 { margin: 0 0 6px; color: #1e3a8a; font-size: 18px; }
-    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; text-align: center; }
-    .stat-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 6px 4px; }
-    .stat-num { font-size: 16px; font-weight: 800; color: #1e3a8a; display: block; }
-    .stat-lbl { font-size: 11px; color: #475569; }
-    .controls { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+    .card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    h2 { margin: 0 0 8px; color: #1e3a8a; font-size: 18px; }
+    .controls { display: flex; gap: 8px; margin-bottom: 10px; }
     input[type="text"] { flex: 1; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
-    button { background: #2563eb; color: #fff; border: none; padding: 7px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    button:hover { background: #1d4ed8; }
+    button { background: #2563eb; color: #fff; border: none; padding: 7px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th, td { border-bottom: 1px solid #e2e8f0; padding: 8px 4px; text-align: left; vertical-align: middle; }
-    th { background: #eff6ff; color: #1e3a8a; position: sticky; top: 0; }
-    .badge { padding: 3px 6px; border-radius: 5px; font-weight: 700; font-size: 11px; display: inline-block; }
-    .working { background: #fef9c3; color: #854d0e; }
-    .done { background: #dcfce7; color: #166534; }
-    .idle { background: #fee2e2; color: #991b1b; }
-    .pill { display: inline-block; padding: 1px 5px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-right: 2px; background: #e2e8f0; color: #475569; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 8px 4px; text-align: left; }
+    th { background: #eff6ff; color: #1e3a8a; }
+    .badge { padding: 3px 6px; border-radius: 5px; font-weight: 700; font-size: 11px; display: inline-block; background: #fef9c3; color: #854d0e; }
+    .badge.done { background: #dcfce7; color: #166534; }
+    .pill { display: inline-block; padding: 1px 4px; border-radius: 3px; font-size: 10px; font-weight: 700; margin: 1px; background: #e2e8f0; color: #475569; }
     .pill.ok { background: #16a34a; color: #fff; }
     a { color: #2563eb; font-weight: 700; text-decoration: none; }
-    .sync-note { font-size: 11px; color: #64748b; text-align: right; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>Live Student Activity & Chapter Monitor</h2>
-
-    <div class="stats-bar">
-      <div class="stat-box"><span class="stat-num" id="activeCount">0</span><span class="stat-lbl">Active</span></div>
-      <div class="stat-box"><span class="stat-num" id="p1Count">0</span><span class="stat-lbl">P1 Done</span></div>
-      <div class="stat-box"><span class="stat-num" id="p2Count">0</span><span class="stat-lbl">P2 Done</span></div>
-      <div class="stat-box"><span class="stat-num" id="p3Count">0</span><span class="stat-lbl">P3 Done</span></div>
-    </div>
-
+    <h2>Live 8-Task Student Activity Radar (<span id="activeCount">0</span> Active)</h2>
     <div class="controls">
       <input type="text" id="searchBox" placeholder="Filter by Reg No or Name..." oninput="renderTable()" />
       <button onclick="loadRadar()">Refresh</button>
     </div>
-
     <table>
-      <thead>
-        <tr>
-          <th>Student</th>
-          <th>Current Chapter</th>
-          <th>Time</th>
-          <th>Progress & Periods</th>
-          <th>Work</th>
-        </tr>
-      </thead>
-      <tbody id="radarBody">
-        <tr><td colspan="5">Scanning classroom activity...</td></tr>
-      </tbody>
+      <thead><tr><th>Student</th><th>Current Task</th><th>Time</th><th>Completed Tasks (T1–T8)</th><th>Folder</th></tr></thead>
+      <tbody id="radarBody"><tr><td colspan="5">Loading live status...</td></tr></tbody>
     </table>
-    <div class="sync-note">Auto-refreshes every 25s | Last synced: <span id="lastSync">—</span></div>
   </div>
 
 <script>
-const OWNER = "athithansmath-cell";
-const REPO  = "Calculus-Lab-2026";
-const RADAR_BRIDGE_URL = "https://script.google.com/macros/s/AKfycby_iNq23NKW_nyqEgnJMPN73NVMf2Wcs4E_WR8VOdvCoB8aTtQIkybUaxoswl2jBOLtEg/exec?action=radar";
-let cachedStudents = [];
+const OWNER = "athithansmath-cell", REPO = "Calculus-Lab-2026";
+const RADAR_URL = "https://script.google.com/macros/s/AKfycby_iNq23NKW_nyqEgnJMPN73NVMf2Wcs4E_WR8VOdvCoB8aTtQIkybUaxoswl2jBOLtEg/exec?action=radar";
+let cached = [];
 
 async function loadRadar() {
   try {
-    const res = await fetch(`${RADAR_BRIDGE_URL}&t=${Date.now()}`);
+    const res = await fetch(`${RADAR_URL}&t=${Date.now()}`);
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
 
     const subMap = {};
-    let p1Total = 0, p2Total = 0, p3Total = 0;
-    (data.subFiles || []).forEach(path => {
-      const m = path.match(/^students\/([^_/]+)_[^/]+\/P([123])_Worked\.md$/);
+    (data.subFiles || []).forEach(p => {
+      const m = p.match(/^students\/([^_/]+)_[^/]+\/T([1-8])_Worked\.md$/);
       if (m) {
-        const reg = m[1], per = m[2];
-        if (!subMap[reg]) subMap[reg] = { 1: false, 2: false, 3: false };
-        subMap[reg][per] = true;
-        if (per === "1") p1Total++;
-        if (per === "2") p2Total++;
-        if (per === "3") p3Total++;
+        if (!subMap[m[1]]) subMap[m[1]] = {};
+        subMap[m[1]][m[2]] = true;
       }
     });
 
-    cachedStudents = (data.students || []).map(s => ({
-      ...s,
-      subs: subMap[s.reg] || { 1: false, 2: false, 3: false }
-    })).sort((a, b) => a.reg.localeCompare(b.reg));
-
-    document.getElementById("activeCount").textContent = cachedStudents.length;
-    document.getElementById("p1Count").textContent = p1Total;
-    document.getElementById("p2Count").textContent = p2Total;
-    document.getElementById("p3Count").textContent = p3Total;
-    document.getElementById("lastSync").textContent = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-
+    cached = (data.students || []).map(s => ({ ...s, subs: subMap[s.reg] || {} })).sort((a, b) => a.reg.localeCompare(b.reg));
+    document.getElementById("activeCount").textContent = cached.length;
     renderTable();
   } catch (e) {
     document.getElementById("radarBody").innerHTML = `<tr><td colspan="5">Error: ${e.message}</td></tr>`;
@@ -107,32 +64,19 @@ async function loadRadar() {
 
 function renderTable() {
   const q = document.getElementById("searchBox").value.trim().toUpperCase();
-  const filtered = q
-    ? cachedStudents.filter(s => s.reg.includes(q) || s.name.includes(q))
-    : cachedStudents;
-
-  document.getElementById("radarBody").innerHTML = filtered.length ? filtered.map(s => {
-    const isDone = s.state && s.state.startsWith("SUBMITTED");
-    const isLowWork = (s.minutes >= 5 && s.moves === 0 && !isDone);
-    const badgeClass = isDone ? "done" : (isLowWork ? "idle" : "working");
+  const list = q ? cached.filter(s => s.reg.includes(q) || s.name.includes(q)) : cached;
+  document.getElementById("radarBody").innerHTML = list.length ? list.map(s => {
+    const pills = [1,2,3,4,5,6,7,8].map(n => `<span class="pill ${s.subs[n] ? 'ok' : ''}">T${n}</span>`).join("");
     const folder = `${s.reg}_${s.name.replace(/ /g, "_")}`;
-    const hasAnySub = s.subs[1] || s.subs[2] || s.subs[3];
-
     return `<tr>
       <td><strong>${s.reg.slice(-4)}</strong><br><small>${s.name.split(" ")[0]}</small></td>
-      <td><span class="badge ${badgeClass}">${s.chapter}</span><br><small>${s.state} @ ${s.updatedAt}</small></td>
+      <td><span class="badge ${s.state?.startsWith('SUBMITTED') ? 'done' : ''}">${s.chapter}</span><br><small>${s.filled} @ ${s.updatedAt}</small></td>
       <td><strong>${s.minutes}m</strong></td>
-      <td>
-        Boxes: <strong>${s.filled}</strong> | Sliders: ${s.moves}<br>
-        <span class="pill ${s.subs[1] ? 'ok' : ''}">P1</span>
-        <span class="pill ${s.subs[2] ? 'ok' : ''}">P2</span>
-        <span class="pill ${s.subs[3] ? 'ok' : ''}">P3</span>
-      </td>
-      <td>${hasAnySub ? `<a href="https://github.com/${OWNER}/${REPO}/tree/main/students/${folder}" target="_blank">View</a>` : `<span style="color:#94a3b8;">—</span>`}</td>
+      <td>${pills}</td>
+      <td><a href="https://github.com/${OWNER}/${REPO}/tree/main/students/${folder}" target="_blank">View</a></td>
     </tr>`;
-  }).join("") : `<tr><td colspan="5">No active students logged in yet.</td></tr>`;
+  }).join("") : `<tr><td colspan="5">No active students yet.</td></tr>`;
 }
-
 loadRadar();
 setInterval(loadRadar, 25000);
 </script>
