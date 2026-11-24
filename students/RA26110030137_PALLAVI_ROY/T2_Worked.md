@@ -1,4 +1,4 @@
 # Task 2 Exam Mastery Report — PALLAVI ROY (RA26110030137)
 * **DOB:** 2007-07-03 | **Seed:** a=11, b=12
-* **Score:** **40/100** | **Audit:** ✅ VERIFIED HANDS-ON (Moves: 26, Time: 2523s)
-* **Summary:** Eigen=(23, -1)
+* **Score:** **0/100** | **Audit:** ✅ VERIFIED HANDS-ON (Moves: 26, Time: 2534s)
+* **Summary:** Eigen=(23, 1)
